@@ -24,7 +24,7 @@
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: var(--bg); color: var(--text); font-family: var(--font-body); min-height: 100vh; font-size: 14px; }
-
+ 
   .sidebar {
     position: fixed; left: 0; top: 0; bottom: 0; width: 220px;
     background: var(--surface); border-right: 1px solid var(--border);
@@ -51,7 +51,7 @@
   .sync-dot.syncing { background: var(--yellow); animation: pulse .8s infinite; }
   .sync-dot.error { background: var(--red); }
   @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.3} }
-
+ 
   .main { margin-left: 220px; min-height: 100vh; }
   .topbar {
     position: sticky; top: 0; background: rgba(10,10,15,.9);
@@ -66,7 +66,7 @@
   }
   .search-box:focus { border-color: var(--accent); }
   .search-box::placeholder { color: var(--muted); }
-
+ 
   .btn { padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-family: var(--font-body); font-size: 13px; font-weight: 600; transition: all .15s; display: inline-flex; align-items: center; gap: 6px; }
   .btn-primary { background: var(--accent); color: #fff; }
   .btn-primary:hover { background: #3a78f0; transform: translateY(-1px); }
@@ -75,11 +75,11 @@
   .btn-sm { padding: 5px 10px; font-size: 12px; }
   .btn-danger { background: rgba(248,113,113,.15); color: var(--red); border: 1px solid rgba(248,113,113,.3); }
   .btn-danger:hover { background: rgba(248,113,113,.25); }
-
+ 
   .content { padding: 24px 28px; }
   .view { display: none; }
   .view.active { display: block; }
-
+ 
   /* KPI */
   .kpi-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 24px; }
   .kpi-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; position: relative; overflow: hidden; }
@@ -89,7 +89,7 @@
   .kpi-value { font-family:var(--font-mono);font-size:22px;font-weight:500;word-break:break-all; }
   .kpi-sub { font-size:11px;color:var(--muted);margin-top:4px; }
   .kpi-card.blue .kpi-value{color:var(--accent)}.kpi-card.purple .kpi-value{color:var(--accent2)}.kpi-card.green .kpi-value{color:var(--green)}.kpi-card.yellow .kpi-value{color:var(--yellow)}.kpi-card.red .kpi-value{color:var(--red)}
-
+ 
   /* TABLE */
   .table-wrap { background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden; }
   .table-header { padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between; }
@@ -100,7 +100,7 @@
   td { padding:11px 14px;border-bottom:1px solid rgba(42,42,56,.5);font-size:13px;vertical-align:middle; }
   tr:last-child td{border-bottom:none}
   tr:hover td{background:rgba(79,138,255,.04)}
-
+ 
   .badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;font-family:var(--font-mono);}
   .badge-new{background:rgba(79,138,255,.15);color:var(--accent)}
   .badge-used{background:rgba(167,139,250,.15);color:var(--accent2)}
@@ -108,13 +108,13 @@
   .badge-done{background:rgba(52,211,153,.15);color:var(--green)}
   .badge-followup{background:rgba(248,113,113,.15);color:var(--red)}
   .badge-otros{background:rgba(99,179,237,.15);color:#63b3ed}
-
+ 
   .avatar{width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;margin-right:8px;flex-shrink:0}
   .client-cell{display:flex;align-items:center}
   .client-info{display:flex;flex-direction:column}
   .client-name{font-weight:600;font-size:13px}
   .client-phone{font-size:11px;color:var(--muted);font-family:var(--font-mono)}
-
+ 
   /* MODAL */
   .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
   .modal-overlay.open{display:flex}
@@ -130,7 +130,7 @@
   .form-group textarea{resize:vertical;min-height:60px}
   .form-group select option{background:var(--surface2)}
   .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
-
+ 
   /* PROFIT SECTION in modal */
   .profit-section{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;grid-column:1/-1}
   .profit-section h4{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px}
@@ -138,7 +138,7 @@
   .profit-calc{display:flex;align-items:center;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
   .profit-calc span{font-size:12px;color:var(--muted)}
   .profit-calc strong{font-family:var(--font-mono);font-size:16px;color:var(--green)}
-
+ 
   /* FACTURACIÓN */
   .facturacion-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}
   .fact-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;position:relative;overflow:hidden}
@@ -148,12 +148,12 @@
   .fact-amount{font-family:var(--font-mono);font-size:20px;font-weight:500;margin-bottom:2px;word-break:break-all}
   .fact-sub{font-size:11px;color:var(--muted)}
   .fact-card.blue .fact-amount{color:var(--accent)}.fact-card.green .fact-amount{color:var(--green)}.fact-card.purple .fact-amount{color:var(--accent2)}
-
+ 
   /* MONTH TABLE */
   .month-selector{display:flex;align-items:center;gap:10px;margin-bottom:20px}
   .month-selector select{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:7px 12px;color:var(--text);font-family:var(--font-body);font-size:13px;outline:none}
   .month-selector select:focus{border-color:var(--accent)}
-
+ 
   /* CHART BAR */
   .chart-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:24px}
   .chart-title{font-family:var(--font-display);font-size:16px;margin-bottom:16px}
@@ -164,7 +164,7 @@
   .bar-seg.revenue{background:var(--accent);opacity:.7}
   .bar-seg.profit{background:var(--green)}
   .bar-label{font-size:10px;color:var(--muted);font-family:var(--font-mono);white-space:nowrap}
-
+ 
   /* TIMELINE */
   .timeline{display:flex;flex-direction:column}
   .tl-item{display:flex;gap:14px;padding:12px 0;border-bottom:1px solid rgba(42,42,56,.4)}
@@ -174,7 +174,7 @@
   .tl-content{flex:1}
   .tl-title{font-size:13px;font-weight:600}
   .tl-meta{font-size:11px;color:var(--muted);margin-top:2px;font-family:var(--font-mono)}
-
+ 
   /* UPGRADES */
   .upgrade-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
   .upgrade-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px}
@@ -187,7 +187,7 @@
   .months-fill.warn{background:var(--yellow)}.months-fill.hot{background:var(--red)}
   .uc-months{display:flex;align-items:center;gap:6px}
   .months-label{font-size:10px;color:var(--muted);font-family:var(--font-mono);white-space:nowrap}
-
+ 
   /* REFERIDOS */
   .ref-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
   .ref-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;display:flex;align-items:center;gap:14px}
@@ -196,47 +196,47 @@
   .ref-name{font-weight:700;font-size:14px}
   .ref-count{font-size:12px;color:var(--muted)}
   .ref-bonus{font-family:var(--font-mono);font-size:13px;color:var(--green);font-weight:600}
-
+ 
   .section-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
   .section-title h3{font-family:var(--font-display);font-size:18px}
-
+ 
   .toast{position:fixed;bottom:24px;right:24px;padding:12px 18px;border-radius:10px;font-size:13px;font-weight:600;z-index:999;transform:translateY(80px);transition:transform .3s ease;pointer-events:none}
   .toast.ok{background:var(--green);color:#000}.toast.err{background:var(--red);color:#fff}
   .toast.show{transform:translateY(0)}
-
+ 
   .loading-overlay{position:fixed;inset:0;background:rgba(10,10,15,.85);z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
   .loading-overlay.hidden{display:none}
   .spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
   @keyframes spin{to{transform:rotate(360deg)}}
   .loading-overlay p{font-size:13px;color:var(--muted)}
-
+ 
   .wa-btn{display:inline-flex;align-items:center;gap:4px;background:rgba(52,211,153,.12);color:var(--green);border:1px solid rgba(52,211,153,.25);border-radius:6px;padding:4px 8px;font-size:11px;font-weight:600;cursor:pointer;text-decoration:none;transition:background .15s}
   .wa-btn:hover{background:rgba(52,211,153,.22)}
-
+ 
   .empty{text-align:center;padding:48px;color:var(--muted)}
   .empty p{font-size:13px}
-
+ 
   .divider{height:1px;background:var(--border);margin:20px 0}
-
+ 
   .color-0{background:rgba(79,138,255,.2);color:#4f8aff}
   .color-1{background:rgba(167,139,250,.2);color:#a78bfa}
   .color-2{background:rgba(52,211,153,.2);color:#34d399}
   .color-3{background:rgba(251,191,36,.2);color:#fbbf24}
   .color-4{background:rgba(248,113,113,.2);color:#f87171}
   .color-5{background:rgba(99,179,237,.2);color:#63b3ed}
-
+ 
   .legend{display:flex;gap:16px;margin-bottom:8px}
   .legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)}
   .legend-dot{width:10px;height:10px;border-radius:2px}
 </style>
 </head>
 <body>
-
+ 
 <div class="loading-overlay" id="loading">
   <div class="spinner"></div>
   <p>Conectando con Google Sheets...</p>
 </div>
-
+ 
 <!-- SIDEBAR -->
 <nav class="sidebar">
   <div class="logo">
@@ -264,7 +264,7 @@
     </div>
   </div>
 </nav>
-
+ 
 <!-- MAIN -->
 <main class="main">
   <div class="topbar">
@@ -273,9 +273,9 @@
     <button class="btn btn-ghost btn-sm" onclick="loadData()" title="Recargar">🔄</button>
     <button class="btn btn-primary" onclick="openModal('venta')">＋ Nueva Venta</button>
   </div>
-
+ 
   <div class="content">
-
+ 
     <!-- DASHBOARD -->
     <div id="view-dashboard" class="view active">
       <div class="kpi-grid">
@@ -291,7 +291,7 @@
         </div>
       </div>
     </div>
-
+ 
     <!-- CLIENTES -->
     <div id="view-clientes" class="view">
       <div class="table-wrap">
@@ -303,7 +303,7 @@
         <tbody id="tabla-clientes"><tr><td colspan="6" class="empty"><p>Cargando...</p></td></tr></tbody></table>
       </div>
     </div>
-
+ 
     <!-- VENTAS -->
     <div id="view-ventas" class="view">
       <div class="table-wrap">
@@ -315,11 +315,11 @@
         <tbody id="tabla-ventas"><tr><td colspan="9" class="empty"><p>Cargando...</p></td></tr></tbody></table>
       </div>
     </div>
-
+ 
     <!-- FACTURACIÓN -->
     <div id="view-facturacion" class="view">
       <div class="facturacion-grid" id="fact-resumen"></div>
-
+ 
       <div class="chart-wrap">
         <div class="chart-title">Facturación y Ganancia por mes</div>
         <div class="legend">
@@ -328,7 +328,7 @@
         </div>
         <div class="bar-chart" id="bar-chart"></div>
       </div>
-
+ 
       <div class="section-title">
         <h3>Detalle por mes</h3>
         <div class="month-selector">
@@ -341,7 +341,7 @@
         <div class="empty"><p>Seleccioná un mes para ver el detalle</p></div>
       </div>
     </div>
-
+ 
     <!-- UPGRADES -->
     <div id="view-upgrades" class="view">
       <div class="section-title"><h3>Clientes listos para upgrade</h3></div>
@@ -349,7 +349,7 @@
         <div class="empty" style="grid-column:1/-1"><p>Cargando...</p></div>
       </div>
     </div>
-
+ 
     <!-- REFERIDOS -->
     <div id="view-referidos" class="view">
       <div class="section-title">
@@ -360,10 +360,10 @@
         <div class="empty" style="grid-column:1/-1"><p>Cargando...</p></div>
       </div>
     </div>
-
+ 
   </div>
 </main>
-
+ 
 <!-- MODAL VENTA -->
 <div class="modal-overlay" id="modal-venta">
   <div class="modal">
@@ -401,7 +401,7 @@
         <select id="v-pago"><option>Efectivo</option><option>Transferencia</option><option>Cuotas</option><option>Trade-in + Diferencia</option><option>Mercado Pago</option></select>
       </div>
       <div class="form-group"><label>Notas</label><input id="v-notas" type="text" placeholder="Garantía, accesorios..."></div>
-
+ 
       <div class="profit-section">
         <h4>💰 Facturación y Profit</h4>
         <div class="profit-row">
@@ -431,7 +431,7 @@
     </div>
   </div>
 </div>
-
+ 
 <!-- MODAL CLIENTE -->
 <div class="modal-overlay" id="modal-cliente">
   <div class="modal">
@@ -448,7 +448,7 @@
     </div>
   </div>
 </div>
-
+ 
 <!-- MODAL REFERIDO -->
 <div class="modal-overlay" id="modal-referido">
   <div class="modal">
@@ -465,14 +465,14 @@
     </div>
   </div>
 </div>
-
+ 
 <div class="toast" id="toast"></div>
-
+ 
 <script>
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzVnz0a6O3IPgsF9byBRGUMaKCaOZml6dk4Hb_KCrD3D8XmGVnGoBFg0N8fmWmkwtXX/exec';
-
+ 
 let state = { ventas: [], clientes: [], referidos: [] };
-
+ 
 // ---- PROFIT CALC (live) ----
 function calcProfit() {
   const precio = parseFloat(document.getElementById('v-precio').value) || 0;
@@ -488,7 +488,7 @@ function calcProfit() {
     document.getElementById('profit-pct').textContent = '';
   }
 }
-
+ 
 // ---- API ----
 async function api(params) {
   setSyncing(true);
@@ -514,7 +514,7 @@ async function api(params) {
     document.head.appendChild(script);
   });
 }
-
+ 
 async function loadData() {
   try {
     const data = await api({ action: 'getAll' });
@@ -528,23 +528,23 @@ async function loadData() {
     document.getElementById('loading').classList.add('hidden');
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 function normalizeVenta(r) {
   let fecha = r['Fecha'] || '';
   if (fecha && typeof fecha === 'object' && fecha.getDate) {
@@ -590,7 +590,7 @@ function normalizeReferido(r) {
     fecha:  r['Fecha'] || ''
   };
 }
-
+ 
 // ---- SYNC STATUS ----
 function setSyncing(on, error = false) {
   const dot = document.getElementById('sync-dot');
@@ -598,7 +598,7 @@ function setSyncing(on, error = false) {
   dot.className = 'sync-dot' + (error ? ' error' : on ? ' syncing' : '');
   lbl.textContent = error ? 'Error de conexión' : on ? 'Sincronizando...' : 'Sincronizado ✓';
 }
-
+ 
 // ---- NAVIGATION ----
 const VIEWS = ['dashboard','clientes','ventas','facturacion','upgrades','referidos'];
 const TITLES = { dashboard:'Dashboard', clientes:'Clientes', ventas:'Ventas', facturacion:'Facturación', upgrades:'Upgrades', referidos:'Referidos' };
@@ -610,19 +610,19 @@ function showView(name) {
   document.querySelectorAll('.nav-item')[VIEWS.indexOf(name)].classList.add('active');
   if (name === 'facturacion') renderFacturacion();
 }
-
+ 
 // ---- MODALS ----
 function openModal(t) { document.getElementById('modal-'+t).classList.add('open'); }
 function closeModal(t) { document.getElementById('modal-'+t).classList.remove('open'); }
 document.querySelectorAll('.modal-overlay').forEach(o => o.addEventListener('click', e => { if(e.target===o) o.classList.remove('open'); }));
-
+ 
 // ---- TOAST ----
 function showToast(msg, type='ok') {
   const t = document.getElementById('toast');
   t.textContent = msg; t.className = 'toast '+type; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 3000);
 }
-
+ 
 // ---- HELPERS ----
 function initials(n) { return (n||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2); }
 function colorClass(n) { return 'color-' + ((n||'A').charCodeAt(0) % 6); }
@@ -664,7 +664,7 @@ function waLink(tel, name, model) {
 function isIphone(modelo) {
   return modelo && modelo.toLowerCase().startsWith('iphone');
 }
-
+ 
 // ---- FACTURACION DATA ----
 function getMonthlyData() {
   const map = {};
@@ -683,7 +683,7 @@ function getCurrentMesKey() {
   const now = new Date();
   return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
 }
-
+ 
 // ---- SAVE VENTA ----
 async function guardarVenta() {
   const nombre = document.getElementById('v-nombre').value.trim();
@@ -696,7 +696,7 @@ async function guardarVenta() {
   const now    = new Date();
   const fecha  = `${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()}`;
   const mes    = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
-
+ 
   const data = {
     nombre, tel: document.getElementById('v-tel').value.trim(),
     modelo, condicion: document.getElementById('v-condicion').value,
@@ -705,7 +705,7 @@ async function guardarVenta() {
     notas: document.getElementById('v-notas').value,
     fecha, mes
   };
-
+ 
   const btn = document.getElementById('btn-guardar-venta');
   btn.disabled = true; btn.textContent = 'Guardando...';
   try {
@@ -723,7 +723,7 @@ async function guardarVenta() {
     btn.disabled = false; btn.textContent = 'Guardar Venta';
   }
 }
-
+ 
 async function guardarCliente() {
   const nombre = document.getElementById('c-nombre').value.trim();
   if (!nombre) return;
@@ -742,7 +742,7 @@ async function guardarCliente() {
     btn.disabled = false; btn.textContent = 'Guardar';
   }
 }
-
+ 
 async function guardarReferido() {
   const nombre = document.getElementById('r-nombre').value.trim();
   if (!nombre) return;
@@ -761,7 +761,7 @@ async function guardarReferido() {
     btn.disabled = false; btn.textContent = 'Guardar';
   }
 }
-
+ 
 async function eliminarVenta(id) {
   if (!confirm('¿Eliminar esta venta?')) return;
   try {
@@ -772,7 +772,7 @@ async function eliminarVenta(id) {
     showToast('❌ Error al eliminar', 'err');
   }
 }
-
+ 
 // ---- RENDER ----
 function render() {
   renderKPIs();
@@ -782,7 +782,7 @@ function render() {
   renderUpgrades();
   renderReferidos();
 }
-
+ 
 function renderKPIs() {
   const mesKey = getCurrentMesKey();
   const monthly = getMonthlyData();
@@ -798,7 +798,7 @@ function renderKPIs() {
   const upgrades = state.clientes.filter(c => { const m = monthsAgo(c.ultimaCompra); return m !== null && m >= 10; }).length;
   // update upgrade badge if needed
 }
-
+ 
 function renderTimeline() {
   const wrap = document.getElementById('timeline-wrap');
   if (!state.ventas.length) { wrap.innerHTML = '<div class="empty"><p>Registrá tu primera venta 🚀</p></div>'; return; }
@@ -811,7 +811,7 @@ function renderTimeline() {
       </div>
     </div>`).join('');
 }
-
+ 
 function renderClientes(filter='') {
   const tbody = document.getElementById('tabla-clientes');
   let list = state.clientes;
@@ -834,7 +834,7 @@ function renderClientes(filter='') {
     </tr>`;
   }).join('');
 }
-
+ 
 function renderVentas(filter='') {
   const tbody = document.getElementById('tabla-ventas');
   let list = state.ventas;
@@ -853,13 +853,13 @@ function renderVentas(filter='') {
     <td><button class="btn btn-danger btn-sm" onclick="eliminarVenta('${v.id}')">🗑</button></td>
   </tr>`).join('');
 }
-
+ 
 function renderFacturacion() {
   const monthly = getMonthlyData();
   const keys = Object.keys(monthly).sort();
   const mesKey = getCurrentMesKey();
   const thisMes = monthly[mesKey] || { ventas:0, revenue:0, profit:0 };
-
+ 
   // Resumen cards
   const totalRevenue = Object.values(monthly).reduce((a,m)=>a+m.revenue,0);
   const totalProfit  = Object.values(monthly).reduce((a,m)=>a+m.profit,0);
@@ -879,10 +879,10 @@ function renderFacturacion() {
       <div class="fact-amount">${fmtARSCompact(totalProfit)}</div>
       <div class="fact-sub">Facturación total: ${fmtARSCompact(totalRevenue)}</div>
     </div>`;
-
+ 
   // Bar chart
   renderBarChart(monthly, keys);
-
+ 
   // Month selector
   const sel = document.getElementById('mes-select');
   const cur = sel.value;
@@ -890,7 +890,7 @@ function renderFacturacion() {
     [...keys].reverse().map(k => `<option value="${k}" ${k===cur?'selected':''}>${mesLabel(k)}</option>`).join('');
   if (cur) renderDetalleMes();
 }
-
+ 
 function renderBarChart(monthly, keys) {
   const recent = keys.slice(-6);
   if (!recent.length) { document.getElementById('bar-chart').innerHTML = '<div class="empty" style="padding:20px"><p>Sin datos aún</p></div>'; return; }
@@ -909,7 +909,7 @@ function renderBarChart(monthly, keys) {
     </div>`;
   }).join('');
 }
-
+ 
 function renderDetalleMes() {
   const key = document.getElementById('mes-select').value;
   const wrap = document.getElementById('detalle-mes-wrap');
@@ -917,10 +917,10 @@ function renderDetalleMes() {
   const monthly = getMonthlyData();
   const mes = monthly[key];
   if (!mes || !mes.items.length) { wrap.innerHTML = '<div class="empty"><p>Sin ventas en este mes</p></div>'; return; }
-
+ 
   const totalRev  = mes.items.reduce((a,v)=>a+v.precio,0);
   const totalProf = mes.items.reduce((a,v)=>a+v.profit,0);
-
+ 
   wrap.innerHTML = `
     <div class="table-header" style="display:flex;gap:24px;align-items:center">
       <h3>${mesLabel(key)}</h3>
@@ -951,7 +951,7 @@ function renderDetalleMes() {
       </tbody>
     </table>`;
 }
-
+ 
 function renderUpgrades() {
   const wrap = document.getElementById('upgrade-cards');
   const candidates = state.clientes.filter(c => { const m = monthsAgo(c.ultimaCompra); return m !== null && m >= 8; });
@@ -969,7 +969,7 @@ function renderUpgrades() {
     </div>`;
   }).join('');
 }
-
+ 
 function renderReferidos() {
   const wrap = document.getElementById('ref-grid');
   if (!state.referidos.length) { wrap.innerHTML = '<div class="empty" style="grid-column:1/-1"><p>Sin referidos aún 🤝</p></div>'; return; }
@@ -984,9 +984,9 @@ function renderReferidos() {
       <div class="ref-bonus">+${r.count}</div>
     </div>`).join('');
 }
-
+ 
 function handleSearch(val) { renderClientes(val); renderVentas(val); }
-
+ 
 loadData();
 </script>
 </body>
