@@ -529,20 +529,45 @@ async function loadData() {
   }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function normalizeVenta(r) {
+  let fecha = r['Fecha'] || '';
+  if (fecha && typeof fecha === 'object' && fecha.getDate) {
+    const d = fecha;
+    fecha = String(d.getDate()).padStart(2,'0') + '/' + String(d.getMonth()+1).padStart(2,'0') + '/' + d.getFullYear();
+  } else { fecha = String(fecha); }
+  let mes = r['Mes'] ? String(r['Mes']) : '';
+  if (!mes && fecha) {
+    const p = fecha.split('/');
+    if (p.length === 3) mes = (p[2].length===2?'20'+p[2]:p[2]) + '-' + p[1].padStart(2,'0');
+  }
   return {
-    id:       r['ID'] || '',
+    id:       String(r['ID'] || ''),
     nombre:   r['Nombre'] || '',
-    tel:      r['Teléfono'] || '',
+    tel:      String(r['Telefono'] || r['Teléfono'] || '').replace(/#ERROR.*/g,''),
     modelo:   r['Modelo'] || '',
-    condicion:r['Condición'] || 'usado',
+    condicion:r['Condicion'] || r['Condición'] || 'usado',
     precio:   parseFloat(r['Precio']) || 0,
     costo:    parseFloat(r['Costo'])  || 0,
     profit:   parseFloat(r['Profit']) || 0,
     pago:     r['Pago'] || '',
     notas:    r['Notas'] || '',
-    fecha:    r['Fecha'] || '',
-    mes:      r['Mes'] || ''
+    fecha, mes
   };
 }
 function normalizeCliente(r) {
