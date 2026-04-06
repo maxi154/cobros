@@ -284,7 +284,7 @@
 </div>
 
 <script>
-const API_URL = 'https://script.google.com/macros/s/AKfycbyPVP7guZxn1zKrqB2tJCO__5HwbY4xKggvGVHpy8gzbWt45t5DjKNAJg5Iyo1fXmQ/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbyullRJyzJhh6ajNPdyY_bd4yXChzyZKnky-qsN907Y2OnMS-GEZpkyrlDM6GI4-8Y/exec';
 
 let clientes = [];
 let nextId = 1;
@@ -303,21 +303,21 @@ async function leerDeSheets() {
 }
 
 async function escribirEnSheets() {
-  // Intentar POST primero, si falla usar GET con datos
-  const payload = { clientes, nextId };
+  const payload = JSON.stringify({ clientes, nextId });
+  // POST primero
   try {
     const res = await fetch(API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ action: 'write', data: payload }),
+      body: JSON.stringify({ action: 'write', data: { clientes, nextId } }),
     });
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const result = await res.json();
     if (result.error) throw new Error(result.error);
     return result;
   } catch(e) {
-    // Fallback: GET con datos comprimidos
-    const encoded = encodeURIComponent(JSON.stringify(payload));
+    // Fallback GET
+    const encoded = encodeURIComponent(payload);
     const res = await fetch(`${API_URL}?action=write&data=${encoded}&t=${Date.now()}`);
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const result = await res.json();
@@ -353,7 +353,7 @@ async function sincronizar() {
     showToast('Datos actualizados');
   } catch(e) {
     setSyncStatus('err', 'Sin conexión');
-    showToast('Error al sincronizar. Revisá tu conexión.');
+    showToast('Error al sincronizar.');
     console.error('Error sincronizar:', e);
   }
   document.getElementById('btn-sync').disabled = false;
@@ -365,7 +365,7 @@ function setSyncStatus(tipo, texto) {
   el.textContent = texto;
 }
 
-// ─── Fechas y lógica ──────────────────────────────────────────────────────
+// ─── Lógica ───────────────────────────────────────────────────────────────
 const DIAS_PLAN = { semanal:7, quincenal:15, mensual:30 };
 const LABEL_PLAN = { semanal:'Semanal', quincenal:'Quincenal', mensual:'Mensual' };
 const SUFIJO_PLAN = { semanal:'sem', quincenal:'quin', mensual:'mes' };
@@ -397,17 +397,15 @@ function fechaHoy() {
 function formatFechaCorta(d) { return d.toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit',year:'2-digit'}); }
 function formatFechaLarga(d) { return d.toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long',year:'numeric'}); }
 
-// ─── Plan selector ────────────────────────────────────────────────────────
 function seleccionarPlan(plan) {
   planSeleccionado = plan;
   ['semanal','quincenal','mensual'].forEach(p => {
-    document.getElementById('plan-'+p).className = 'plan-option' + (p===plan?' selected-'+p:'');
+    document.getElementById('plan-'+p).className = 'plan-option'+(p===plan?' selected-'+p:'');
   });
 }
 
-// ─── Búsqueda global ──────────────────────────────────────────────────────
 function highlight(texto, q) {
-  if (!q) return texto;
+  if (!q) return String(texto);
   const re = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi');
   return String(texto).replace(re, '<mark>$1</mark>');
 }
@@ -424,12 +422,11 @@ function onBusquedaGlobal() {
     c.productos.join(' ').toLowerCase().includes(q)
   );
   document.getElementById('resultados-titulo').textContent =
-    res.length===0 ? 'Sin resultados' : `${res.length} cliente${res.length!==1?'s':''} encontrado${res.length!==1?'s':''}`;
+    res.length===0?'Sin resultados':`${res.length} cliente${res.length!==1?'s':''} encontrado${res.length!==1?'s':''}`;
   document.getElementById('lista-busqueda').innerHTML =
-    res.length===0 ? `<div class="empty">No se encontró ningún cliente</div>` : res.map(c=>cardCliente(c,q)).join('');
+    res.length===0?`<div class="empty">No se encontró ningún cliente</div>`:res.map(c=>cardCliente(c,q)).join('');
 }
 
-// ─── Métricas ─────────────────────────────────────────────────────────────
 function renderMetrics() {
   const fin = clientes.filter(c=>estadoCliente(c)==='finalizado').length;
   const venc = clientes.filter(c=>estadoCliente(c)==='vencido').length;
@@ -446,7 +443,6 @@ function renderMetrics() {
   `;
 }
 
-// ─── Tarjeta ──────────────────────────────────────────────────────────────
 function cardCliente(cl, query='') {
   const estado = estadoCliente(cl);
   const dias = diasParaProxima(cl);
@@ -458,7 +454,7 @@ function cardCliente(cl, query='') {
   const dots = Array.from({length:Math.min(cl.totalCuotas,40)},(_,i)=>{
     const cls = i<cl.cuotasPagas?'paga':i===cl.cuotasPagas&&estado!=='finalizado'?(estado==='vencido'?'vencida':'proxima'):'pendiente';
     return `<div class="cuota-dot ${cls}" title="Cuota ${i+1}">${i+1}</div>`;
-  }).join('') + (cl.totalCuotas>40?`<div style="font-size:11px;color:var(--text3);align-self:center;margin-left:4px">+${cl.totalCuotas-40} más</div>`:'');
+  }).join('')+(cl.totalCuotas>40?`<div style="font-size:11px;color:var(--text3);align-self:center;margin-left:4px">+${cl.totalCuotas-40} más</div>`:'');
   const ultimaNota = cl.notas&&cl.notas.length>0?cl.notas[cl.notas.length-1]:null;
   const notaHtml = ultimaNota?`<div class="nota-preview">Nota: ${ultimaNota.texto.length>90?ultimaNota.texto.slice(0,90)+'...':ultimaNota.texto}</div>`:'';
   const nc = cl.notas?cl.notas.length:0;
@@ -487,7 +483,6 @@ function cardCliente(cl, query='') {
   </div>`;
 }
 
-// ─── Renders ──────────────────────────────────────────────────────────────
 function renderCobrosHoy() {
   const lista = clientes.filter(c=>['proximo','vencido'].includes(estadoCliente(c))).sort((a,b)=>diasParaProxima(a)-diasParaProxima(b));
   document.getElementById('lista-cobros').innerHTML = lista.length===0?`<div class="empty">Sin cobros urgentes por ahora</div>`:lista.map(c=>cardCliente(c)).join('');
@@ -518,7 +513,6 @@ function cambiarTab(tab,btn) {
   renderAll();
 }
 
-// ─── Nuevo cliente ────────────────────────────────────────────────────────
 function abrirModalNuevo() {
   document.getElementById('n-fecha').value = hoy().toISOString().split('T')[0];
   ['n-nombre','n-tel','n-dir','n-prod','n-nota'].forEach(id=>document.getElementById(id).value='');
@@ -547,15 +541,13 @@ async function guardarCliente() {
     historial:[],
     notas: notaIni?[{fecha:fechaHoy(),texto:notaIni}]:[]
   });
-  cerrarModal('modal-nuevo');
-  renderAll();
+  cerrarModal('modal-nuevo'); renderAll();
   showToast('Cliente agregado — guardando...');
   await guardarEnSheets();
 }
 
-// ─── Editar ───────────────────────────────────────────────────────────────
 function abrirEditar(id) {
-  const cl = clientes.find(c=>c.id===id);
+  const cl=clientes.find(c=>c.id===id);
   document.getElementById('e-id').value=id;
   document.getElementById('e-nombre').value=cl.nombre;
   document.getElementById('e-tel').value=cl.tel||'';
@@ -572,8 +564,7 @@ async function actualizarCliente() {
   const cl=clientes.find(c=>c.id===id);
   const nombre=document.getElementById('e-nombre').value.trim();
   if (!nombre) { alert('El nombre es obligatorio'); return; }
-  cl.nombre=nombre;
-  cl.tel=document.getElementById('e-tel').value.trim();
+  cl.nombre=nombre; cl.tel=document.getElementById('e-tel').value.trim();
   cl.dir=document.getElementById('e-dir').value.trim();
   cl.plan=document.getElementById('e-plan').value;
   cl.totalCuotas=parseInt(document.getElementById('e-cuotas').value)||cl.totalCuotas;
@@ -595,7 +586,6 @@ async function eliminarCliente() {
   await guardarEnSheets();
 }
 
-// ─── Notas ────────────────────────────────────────────────────────────────
 function abrirNota(id) {
   notaClienteId=id;
   const cl=clientes.find(c=>c.id===id);
@@ -632,18 +622,15 @@ async function guardarNota() {
   await guardarEnSheets();
 }
 
-// ─── Cobro ────────────────────────────────────────────────────────────────
 async function registrarCobro(id) {
   const cl=clientes.find(c=>c.id===id);
   if (!cl||cl.cuotasPagas>=cl.totalCuotas) return;
-  cl.cuotasPagas++;
-  cl.historial.push(fechaHoy());
+  cl.cuotasPagas++; cl.historial.push(fechaHoy());
   renderAll();
   showToast(`Cuota ${cl.cuotasPagas}/${cl.totalCuotas} registrada para ${cl.nombre}`);
   await guardarEnSheets();
 }
 
-// ─── Detalle ──────────────────────────────────────────────────────────────
 function verDetalle(id) {
   const cl=clientes.find(c=>c.id===id);
   const estado=estadoCliente(cl);
@@ -654,7 +641,6 @@ function verDetalle(id) {
   const histHtml=cl.historial.length>0?cl.historial.map((f,i)=>`<div class="historial-entry"><span>Cuota ${i+1}</span><span>${f}</span></div>`).join(''):`<div style="font-size:13px;color:var(--text3);padding:8px 0">Sin pagos registrados</div>`;
   const prodsHtml=cl.productos.map(p=>`<span class="tag">${p}</span>`).join('');
   const notasHtml=cl.notas&&cl.notas.length>0?cl.notas.slice().reverse().map(n=>`<div class="nota-item"><div class="nota-header"><span class="nota-fecha">${n.fecha}</span></div><div class="nota-texto">${n.texto}</div></div>`).join(''):`<div style="font-size:13px;color:var(--text3);padding:8px 0">Sin notas</div>`;
-  const estadoTexto={finalizado:'Finalizado',vencido:'Vencido',proximo:'Por vencer','al-dia':'Al día'}[estado];
   document.getElementById('modal-detalle-content').innerHTML=`
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px">
       <div>
@@ -671,7 +657,7 @@ function verDetalle(id) {
       <div class="detail-cell"><div class="dl">Total cobrado</div><div class="dv green">$${cobrado.toLocaleString('es-AR')}</div></div>
       <div class="detail-cell"><div class="dl">Saldo pendiente</div><div class="dv red">$${pendiente.toLocaleString('es-AR')}</div></div>
       <div class="detail-cell"><div class="dl">Próximo vencimiento</div><div class="dv" style="font-size:14px">${prox}</div></div>
-      <div class="detail-cell"><div class="dl">Estado</div><div class="dv" style="font-size:14px">${estadoTexto}</div></div>
+      <div class="detail-cell"><div class="dl">Estado</div><div class="dv" style="font-size:14px">${{finalizado:'Finalizado',vencido:'Vencido',proximo:'Por vencer','al-dia':'Al día'}[estado]}</div></div>
     </div>
     <div class="section-sub">Historial de pagos</div>
     <div style="max-height:150px;overflow-y:auto;margin-bottom:14px">${histHtml}</div>
@@ -686,15 +672,13 @@ function verDetalle(id) {
   document.getElementById('modal-detalle').classList.add('open');
 }
 
-// ─── Excel ────────────────────────────────────────────────────────────────
 function exportarExcel() {
   const wb = XLSX.utils.book_new();
   const ws1 = XLSX.utils.aoa_to_sheet([
     ['Nombre','Teléfono','Dirección','Plan','Productos','Cuotas Totales','Cuotas Pagas','Pendientes','Monto/Cuota','Total Cobrado','Saldo Pendiente','Estado','Próxima Cuota','Fecha 1ra Cuota'],
     ...clientes.map(cl=>{
-      const estado=estadoCliente(cl);
       const prox=cl.cuotasPagas<cl.totalCuotas?formatFechaCorta(fechaProxCuota(cl)):'Completado';
-      return [cl.nombre,cl.tel||'',cl.dir||'',LABEL_PLAN[cl.plan||'semanal'],cl.productos.join(', '),cl.totalCuotas,cl.cuotasPagas,cl.totalCuotas-cl.cuotasPagas,cl.monto,cl.cuotasPagas*cl.monto,(cl.totalCuotas-cl.cuotasPagas)*cl.monto,{finalizado:'Finalizado',vencido:'Vencido',proximo:'Por vencer','al-dia':'Al día'}[estado],prox,cl.fechaInicio];
+      return [cl.nombre,cl.tel||'',cl.dir||'',LABEL_PLAN[cl.plan||'semanal'],cl.productos.join(', '),cl.totalCuotas,cl.cuotasPagas,cl.totalCuotas-cl.cuotasPagas,cl.monto,cl.cuotasPagas*cl.monto,(cl.totalCuotas-cl.cuotasPagas)*cl.monto,{finalizado:'Finalizado',vencido:'Vencido',proximo:'Por vencer','al-dia':'Al día'}[estadoCliente(cl)],prox,cl.fechaInicio];
     })
   ]);
   ws1['!cols']=[22,14,18,10,28,14,13,14,13,15,15,12,14,14].map(w=>({wch:w}));
@@ -709,7 +693,6 @@ function exportarExcel() {
   showToast('Excel exportado');
 }
 
-// ─── Utilidades ───────────────────────────────────────────────────────────
 function showToast(msg) {
   const e=document.querySelector('.toast'); if(e) e.remove();
   const t=document.createElement('div');
@@ -722,7 +705,6 @@ document.querySelectorAll('.modal-overlay').forEach(o=>{
 });
 document.getElementById('fecha-hoy').textContent = formatFechaLarga(hoy());
 
-// ─── Inicio ───────────────────────────────────────────────────────────────
 (async()=>{
   try {
     const data = await leerDeSheets();
