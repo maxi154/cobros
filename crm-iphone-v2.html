@@ -492,17 +492,27 @@ function calcProfit() {
 // ---- API ----
 async function api(params) {
   setSyncing(true);
-  try {
-    const url = SCRIPT_URL + '?' + new URLSearchParams(params).toString();
-    const res  = await fetch(url);
-    const data = await res.json();
-    setSyncing(false);
-    if (data.error) throw new Error(data.error);
-    return data;
-  } catch (err) {
-    setSyncing(false, true);
-    throw err;
-  }
+  return new Promise((resolve, reject) => {
+    const cbName = 'cb_' + Date.now();
+    const url = SCRIPT_URL + '?' + new URLSearchParams(params).toString() + '&callback=' + cbName;
+    const script = document.createElement('script');
+    const timer = setTimeout(() => {
+      cleanup(); setSyncing(false, true); reject(new Error('Timeout'));
+    }, 15000);
+    function cleanup() {
+      clearTimeout(timer);
+      delete window[cbName];
+      if (script.parentNode) script.parentNode.removeChild(script);
+    }
+    window[cbName] = (data) => {
+      cleanup(); setSyncing(false);
+      if (data.error) { reject(new Error(data.error)); return; }
+      resolve(data);
+    };
+    script.onerror = () => { cleanup(); setSyncing(false, true); reject(new Error('Error de conexión')); };
+    script.src = url;
+    document.head.appendChild(script);
+  });
 }
 
 async function loadData() {
