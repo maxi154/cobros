@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Préstamos Diarios</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #f7f7f5; --surface: #ffffff; --surface2: #f0efeb;
+    --border: rgba(0,0,0,0.1); --border2: rgba(0,0,0,0.18);
+    --text: #1a1a18; --text2: #5f5e5a; --text3: #9a9994;
+    --radius: 10px; --radius-lg: 14px;
+    --green: #1D9E75; --green-bg: #EAF3DE; --green-text: #3B6D11;
+    --amber: #EF9F27; --amber-bg: #FAEEDA; --amber-text: #854F0B;
+    --red: #E24B4A; --red-bg: #FCEBEB; --red-text: #A32D2D;
+    --blue-bg: #E6F1FB; --blue-text: #185FA5;
+    --gray-bg: #F1EFE8; --gray-text: #5F5E5A;
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 15px; }
+  .topbar { background: var(--surface); border-bottom: 0.5px solid var(--border); padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; gap: 10px; flex-wrap: wrap; }
+  .topbar-left h1 { font-size: 17px; font-weight: 600; }
+  .topbar-left p { font-size: 12px; color: var(--text2); margin-top: 1px; }
+  .topbar-right { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .sync-indicator { font-size: 11px; padding: 4px 10px; border-radius: 20px; font-weight: 600; }
+  .sync-ok { background: var(--green-bg); color: var(--green-text); }
+  .sync-err { background: var(--red-bg); color: var(--red-text); }
+  .sync-loading { background: var(--amber-bg); color: var(--amber-text); }
+  .global-search { background: var(--surface); border-bottom: 0.5px solid var(--border); padding: 10px 20px; position: sticky; top: 57px; z-index: 9; }
+  .search-wrapper { position: relative; max-width: 860px; margin: 0 auto; }
+  .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text3); pointer-events: none; }
+  .global-search input { width: 100%; padding: 9px 14px 9px 34px; border: 0.5px solid var(--border2); border-radius: var(--radius); font-size: 14px; background: var(--surface2); color: var(--text); font-family: inherit; }
+  .global-search input:focus { outline: none; border-color: #378ADD; background: var(--surface); }
+  .container { max-width: 860px; margin: 0 auto; padding: 20px 16px; }
+  .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; margin-bottom: 20px; }
+  .metric { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 14px; }
+  .metric-label { font-size: 11px; color: var(--text2); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.03em; }
+  .metric-value { font-size: 22px; font-weight: 600; }
+  .metric-value.green { color: var(--green-text); }
+  .metric-value.amber { color: var(--amber-text); }
+  .metric-value.red { color: var(--red-text); }
+  .tabs { display: flex; gap: 2px; margin-bottom: 16px; background: var(--surface2); border-radius: var(--radius); padding: 4px; }
+  .tab { flex: 1; background: none; border: none; padding: 8px 6px; border-radius: 7px; font-size: 13px; color: var(--text2); cursor: pointer; font-weight: 500; }
+  .tab.active { background: var(--surface); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  .section { display: none; }
+  .section.active { display: block; }
+  .filter-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+  .filter-btn { border: 0.5px solid var(--border); background: var(--surface); padding: 5px 13px; border-radius: 20px; font-size: 12px; cursor: pointer; color: var(--text2); font-weight: 500; }
+  .filter-btn.active { background: var(--text); color: var(--surface); border-color: transparent; }
+  .card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 16px; margin-bottom: 10px; }
+  .client-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .avatar { width: 42px; height: 42px; border-radius: 50%; background: var(--blue-bg); color: var(--blue-text); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; flex-shrink: 0; }
+  .client-info { flex: 1; min-width: 0; }
+  .client-name { font-size: 15px; font-weight: 600; }
+  .client-sub { font-size: 12px; color: var(--text2); margin-top: 2px; }
+  .client-meta { font-size: 11px; color: var(--text3); margin-top: 2px; }
+  .badge { display: inline-block; font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 600; white-space: nowrap; }
+  .badge-ok { background: var(--green-bg); color: var(--green-text); }
+  .badge-warn { background: var(--amber-bg); color: var(--amber-text); }
+  .badge-danger { background: var(--red-bg); color: var(--red-text); }
+  .badge-gray { background: var(--gray-bg); color: var(--gray-text); }
+  .progress-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .progress-bar { flex: 1; height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 3px; background: var(--green); }
+  .progress-fill.warn { background: var(--amber); }
+  .progress-fill.danger { background: var(--red); }
+  .progress-text { font-size: 12px; color: var(--text2); white-space: nowrap; }
+  /* Calendario de días */
+  .dias-grid { display: flex; gap: 3px; flex-wrap: wrap; margin-bottom: 10px; }
+  .dia-dot { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 600; cursor: default; }
+  .dia-dot.pagado { background: var(--green-bg); color: var(--green-text); }
+  .dia-dot.hoy { background: var(--amber-bg); color: var(--amber-text); border: 1.5px solid var(--amber); }
+  .dia-dot.pendiente { background: var(--surface2); color: var(--text3); }
+  .dia-dot.vencido { background: var(--red-bg); color: var(--red-text); }
+  .dia-dot.finde { background: none; color: var(--text3); font-size: 8px; }
+  .nota-preview { padding: 8px 10px; background: var(--amber-bg); border-left: 3px solid var(--amber); border-radius: 6px; font-size: 12px; color: var(--amber-text); margin-bottom: 10px; }
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .empty { text-align: center; padding: 40px; color: var(--text3); font-size: 14px; }
+  /* Info financiera */
+  .fin-row { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+  .fin-item { flex: 1; min-width: 80px; background: var(--surface2); border-radius: var(--radius); padding: 8px 10px; }
+  .fin-label { font-size: 10px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.03em; }
+  .fin-value { font-size: 14px; font-weight: 600; margin-top: 2px; }
+  .fin-value.green { color: var(--green-text); }
+  .fin-value.red { color: var(--red-text); }
+  .fin-value.amber { color: var(--amber-text); }
+  /* Atrasos badge */
+  .atraso-badge { display: inline-flex; align-items: center; gap: 4px; background: var(--red-bg); color: var(--red-text); font-size: 11px; padding: 3px 8px; border-radius: 20px; font-weight: 600; margin-left: 6px; }
+  button { font-family: inherit; cursor: pointer; }
+  .btn { border: 0.5px solid var(--border2); background: transparent; padding: 7px 15px; border-radius: var(--radius); font-size: 13px; color: var(--text); transition: background 0.12s; font-weight: 500; }
+  .btn:hover { background: var(--surface2); }
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .btn-primary { background: var(--text); color: var(--surface); border-color: transparent; }
+  .btn-primary:hover { opacity: 0.85; }
+  .btn-note { border-color: var(--amber); color: var(--amber-text); }
+  .btn-note:hover { background: var(--amber-bg); }
+  .btn-danger { border-color: var(--red); color: var(--red-text); }
+  .btn-danger:hover { background: var(--red-bg); }
+  .btn-green { border-color: var(--green); color: var(--green-text); }
+  .btn-green:hover { background: var(--green-bg); }
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; align-items: center; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--surface); border-radius: var(--radius-lg); padding: 24px; width: 94%; max-width: 520px; max-height: 92vh; overflow-y: auto; border: 0.5px solid var(--border); }
+  .modal-title { font-size: 16px; font-weight: 600; margin-bottom: 18px; }
+  .form-group { margin-bottom: 14px; }
+  .form-label { font-size: 13px; color: var(--text2); margin-bottom: 5px; display: block; font-weight: 500; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  input[type=text], input[type=number], input[type=date], textarea, select { width: 100%; padding: 9px 12px; border: 0.5px solid var(--border2); border-radius: var(--radius); font-size: 14px; background: var(--surface); color: var(--text); font-family: inherit; }
+  input:focus, textarea:focus, select:focus { outline: none; border-color: #378ADD; }
+  textarea { resize: vertical; min-height: 80px; }
+  .modal-footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 18px; flex-wrap: wrap; }
+  .historial-entry { font-size: 12px; color: var(--text2); padding: 6px 0; border-bottom: 0.5px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  .historial-entry:last-child { border-bottom: none; }
+  .nota-item { background: var(--amber-bg); border-radius: var(--radius); padding: 9px 11px; margin-bottom: 7px; border-left: 3px solid var(--amber); }
+  .nota-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+  .nota-fecha { font-size: 11px; color: var(--amber-text); font-weight: 500; }
+  .nota-texto { font-size: 13px; color: #412402; line-height: 1.5; }
+  .btn-del { background: none; border: none; font-size: 13px; color: var(--red-text); cursor: pointer; }
+  .section-sub { font-size: 12px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; margin-top: 16px; }
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .detail-cell .dl { font-size: 12px; color: var(--text2); margin-bottom: 2px; }
+  .detail-cell .dv { font-size: 16px; font-weight: 600; }
+  .dv.green { color: var(--green-text); }
+  .dv.red { color: var(--red-text); }
+  .tag { display: inline-block; background: var(--surface2); color: var(--text2); font-size: 11px; padding: 3px 9px; border-radius: 20px; margin: 2px; }
+  .loading-screen { position: fixed; inset: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; gap: 16px; }
+  .spinner { width: 36px; height: 36px; border: 3px solid var(--border); border-top-color: var(--text); border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { font-size: 14px; color: var(--text2); }
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #1a1a18; color: #fff; padding: 11px 22px; border-radius: 30px; font-size: 13px; z-index: 9999; white-space: nowrap; animation: fadein 0.2s; }
+  @keyframes fadein { from { opacity:0; transform: translateX(-50%) translateY(8px); } to { opacity:1; transform: translateX(-50%) translateY(0); } }
+  mark { background: #fff3b0; border-radius: 2px; padding: 0 1px; }
+  /* Calculadora preview */
+  .calc-preview { background: var(--surface2); border-radius: var(--radius); padding: 12px 14px; margin-top: 8px; font-size: 13px; color: var(--text2); }
+  .calc-preview strong { color: var(--text); }
+  @media (max-width: 500px) { .form-row, .detail-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<div class="loading-screen" id="loading-screen">
+  <div class="spinner"></div>
+  <div class="loading-text">Conectando con Google Sheets...</div>
+</div>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <h1>Préstamos Diarios</h1>
+    <p id="fecha-hoy"></p>
+  </div>
+  <div class="topbar-right">
+    <span class="sync-indicator sync-ok" id="sync-status">Sincronizado</span>
+    <button class="btn" onclick="sincronizar()" id="btn-sync">Actualizar</button>
+    <button class="btn btn-primary" onclick="abrirModalNuevo()">+ Nuevo préstamo</button>
+  </div>
+</div>
+
+<div class="global-search">
+  <div class="search-wrapper">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="buscador-global" placeholder="Buscar por nombre o teléfono..." oninput="onBusquedaGlobal()" />
+  </div>
+</div>
+
+<div class="container">
+  <div id="resultados-busqueda" style="display:none;">
+    <div style="font-size:13px;color:var(--text2);margin-bottom:12px;" id="resultados-titulo"></div>
+    <div id="lista-busqueda"></div>
+  </div>
+  <div id="vista-normal">
+    <div class="metrics" id="metrics-area"></div>
+    <div class="tabs">
+      <button class="tab active" onclick="cambiarTab('hoy',this)">Cobrar hoy</button>
+      <button class="tab" onclick="cambiarTab('todos',this)">Todos</button>
+      <button class="tab" onclick="cambiarTab('atrasados',this)">Atrasados</button>
+    </div>
+    <div class="section active" id="tab-hoy"><div id="lista-hoy"></div></div>
+    <div class="section" id="tab-todos">
+      <div class="filter-row">
+        <button class="filter-btn active" onclick="setFiltro('todos',this)">Todos</button>
+        <button class="filter-btn" onclick="setFiltro('activo',this)">Activos</button>
+        <button class="filter-btn" onclick="setFiltro('atrasado',this)">Atrasados</button>
+        <button class="filter-btn" onclick="setFiltro('finalizado',this)">Finalizados</button>
+      </div>
+      <div id="lista-todos"></div>
+    </div>
+    <div class="section" id="tab-atrasados"><div id="lista-atrasados"></div></div>
+  </div>
+</div>
+
+<!-- Modal nuevo préstamo -->
+<div id="modal-nuevo" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-title">Nuevo préstamo</div>
+    <div class="form-group"><label class="form-label">Nombre del cliente *</label><input type="text" id="n-nombre" placeholder="Ej: Juan Pérez" /></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Teléfono</label><input type="text" id="n-tel" placeholder="351-555-1234" /></div>
+      <div class="form-group"><label class="form-label">Dirección</label><input type="text" id="n-dir" placeholder="Belgrano 1234" /></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Capital prestado ($) *</label><input type="number" id="n-capital" placeholder="100000" oninput="calcularPreview()" /></div>
+      <div class="form-group"><label class="form-label">Tasa de interés (%)</label><input type="number" id="n-tasa" value="45" placeholder="45" oninput="calcularPreview()" /></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Días de pago *</label><input type="number" id="n-dias" value="20" min="1" max="60" oninput="calcularPreview()" /></div>
+      <div class="form-group"><label class="form-label">Fecha inicio *</label><input type="date" id="n-fecha" /></div>
+    </div>
+    <div id="calc-preview" class="calc-preview" style="display:none;"></div>
+    <div class="form-group" style="margin-top:10px;"><label class="form-label">Nota inicial (opcional)</label><textarea id="n-nota" placeholder="Ej: Vive en el fondo del pasaje..."></textarea></div>
+    <div class="modal-footer">
+      <button class="btn" onclick="cerrarModal('modal-nuevo')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarPrestamo()">Guardar préstamo</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal editar -->
+<div id="modal-editar" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-title">Editar préstamo</div>
+    <input type="hidden" id="e-id" />
+    <div class="form-group"><label class="form-label">Nombre *</label><input type="text" id="e-nombre" /></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Teléfono</label><input type="text" id="e-tel" /></div>
+      <div class="form-group"><label class="form-label">Dirección</label><input type="text" id="e-dir" /></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-danger" onclick="eliminarPrestamo()">Eliminar</button>
+      <button class="btn" onclick="cerrarModal('modal-editar')">Cancelar</button>
+      <button class="btn btn-primary" onclick="actualizarPrestamo()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal notas -->
+<div id="modal-nota" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-title" id="nota-title">Notas</div>
+    <div class="form-group"><label class="form-label">Nueva nota</label><textarea id="nota-texto" placeholder="Ej: No estaba en casa, volver mañana..."></textarea></div>
+    <div id="notas-existentes"></div>
+    <div class="modal-footer">
+      <button class="btn" onclick="cerrarModal('modal-nota')">Cerrar</button>
+      <button class="btn btn-primary" onclick="guardarNota()">Agregar nota</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal detalle -->
+<div id="modal-detalle" class="modal-overlay">
+  <div class="modal" id="modal-detalle-content"></div>
+</div>
+
+<script>
+const API_URL = 'https://script.google.com/macros/s/AKfycbwQ3gho2sm6PafZ91W07H7zmYQeXtO9UiXm8KeDAZWQjEWQqIYcZTjISSqMGRegA4Q/exec';
+
+
+let prestamos = [];
+let nextId = 1;
+let filtroActual = 'todos';
+let notaPrestamoId = null;
+let guardandoEnCurso = false;
+
+// ─── JSONP ────────────────────────────────────────────────────────────────
+function jsonp(params) {
+  return new Promise((resolve, reject) => {
+    const cb = 'cb_' + Date.now() + '_' + Math.floor(Math.random()*99999);
+    const script = document.createElement('script');
+    const timer = setTimeout(() => { cleanup(); reject(new Error('Timeout')); }, 15000);
+    function cleanup() {
+      clearTimeout(timer);
+      delete window[cb];
+      if (script.parentNode) script.parentNode.removeChild(script);
+    }
+    window[cb] = function(data) { cleanup(); resolve(data); };
+    script.onerror = () => { cleanup(); reject(new Error('Error de red')); };
+    const qs = Object.entries({...params, callback: cb, t: Date.now()})
+      .map(([k,v]) => k + '=' + encodeURIComponent(v)).join('&');
+    script.src = API_URL + '?' + qs;
+    document.head.appendChild(script);
+  });
+}
+
+async function apiCall(params) {
+  const data = await jsonp(params);
+  if (data.error) throw new Error(data.error);
+  return data;
+}
+
+async function leerDeSheets() {
+  return await apiCall({ action: 'read' });
+}
+
+async function escribirEnSheets() {
+  return await apiCall({ action: 'write', data: JSON.stringify({ prestamos, nextId }) });
+}
+
+async function guardarEnSheets() {
+  if (guardandoEnCurso) return;
+  guardandoEnCurso = true;
+  setSyncStatus('loading', 'Guardando...');
+  try {
+    await escribirEnSheets();
+    setSyncStatus('ok', 'Guardado ✓');
+  } catch(e) {
+    setSyncStatus('err', 'Error al guardar');
+    showToast('No se pudo guardar. Revisá tu conexión.');
+    console.error(e);
+  }
+  guardandoEnCurso = false;
+}
+
+async function sincronizar() {
+  setSyncStatus('loading', 'Sincronizando...');
+  document.getElementById('btn-sync').disabled = true;
+  try {
+    const data = await leerDeSheets();
+    prestamos = data.prestamos || [];
+    nextId = data.nextId || (prestamos.length > 0 ? Math.max(...prestamos.map(p=>p.id))+1 : 1);
+    renderAll();
+    setSyncStatus('ok', 'Sincronizado');
+    showToast('Datos actualizados');
+  } catch(e) {
+    setSyncStatus('err', 'Sin conexión');
+    showToast('Error al sincronizar.');
+    console.error(e);
+  }
+  document.getElementById('btn-sync').disabled = false;
+}
+
+function setSyncStatus(tipo, texto) {
+  const el = document.getElementById('sync-status');
+  el.className = 'sync-indicator '+(tipo==='ok'?'sync-ok':tipo==='err'?'sync-err':'sync-loading');
+  el.textContent = texto;
+}
+
+// ─── Lógica de días hábiles ───────────────────────────────────────────────
+function esHabil(fecha) {
+  const d = fecha.getDay();
+  return d !== 0 && d !== 6; // no domingo, no sábado
+}
+
+function diasHabilesDesde(fechaInicio, cantDias) {
+  // Devuelve array de fechas hábiles
+  const dias = [];
+  const d = new Date(fechaInicio + 'T00:00:00');
+  while (dias.length < cantDias) {
+    if (esHabil(d)) dias.push(new Date(d));
+    d.setDate(d.getDate() + 1);
+  }
+  return dias;
+}
+
+function fechaStr(d) {
+  return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getFullYear()).slice(2)}`;
+}
+
+function hoy() { return new Date(); }
+
+function formatFechaLarga(d) {
+  return d.toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+}
+
+function fechaHoy() { return fechaStr(hoy()); }
+
+function initials(n) { return n.split(' ').slice(0,2).map(x=>x[0]).join('').toUpperCase(); }
+
+function estadoPrestamo(p) {
+  if (p.diasPagados >= p.diasTotal) return 'finalizado';
+  const diasHabiles = diasHabilesDesde(p.fechaInicio, p.diasTotal);
+  const hd = hoy();
+  hd.setHours(0,0,0,0);
+  // Días hábiles que ya pasaron (incluyendo hoy)
+  const diasTranscurridos = diasHabiles.filter(d => d <= hd).length;
+  const atrasos = diasTranscurridos - p.diasPagados;
+  if (atrasos > 0) return 'atrasado';
+  return 'activo';
+}
+
+function diasAtrasados(p) {
+  if (p.diasPagados >= p.diasTotal) return 0;
+  const diasHabiles = diasHabilesDesde(p.fechaInicio, p.diasTotal);
+  const hd = hoy();
+  hd.setHours(0,0,0,0);
+  const diasTranscurridos = diasHabiles.filter(d => d <= hd).length;
+  return Math.max(0, diasTranscurridos - p.diasPagados);
+}
+
+function cobrarHoy(p) {
+  // ¿Hay que cobrar hoy?
+  if (p.diasPagados >= p.diasTotal) return false;
+  const hd = hoy();
+  if (!esHabil(hd)) return false;
+  const diasHabiles = diasHabilesDesde(p.fechaInicio, p.diasTotal);
+  const hd0 = new Date(hd); hd0.setHours(0,0,0,0);
+  const hayDiaHoy = diasHabiles.some(d => d.getTime() === hd0.getTime());
+  if (!hayDiaHoy) return false;
+  // Calcular si ya se cobró hoy (es el siguiente a pagar)
+  const diasTranscurridos = diasHabiles.filter(d => d <= hd0).length;
+  return p.diasPagados < diasTranscurridos;
+}
+
+// ─── Calculadora ──────────────────────────────────────────────────────────
+function calcularPreview() {
+  const capital = parseFloat(document.getElementById('n-capital').value) || 0;
+  const tasa = parseFloat(document.getElementById('n-tasa').value) || 45;
+  const dias = parseInt(document.getElementById('n-dias').value) || 20;
+  const preview = document.getElementById('calc-preview');
+  if (!capital) { preview.style.display='none'; return; }
+  const total = capital * (1 + tasa/100);
+  const cuota = total / dias;
+  preview.style.display = 'block';
+  preview.innerHTML = `Total a devolver: <strong>$${Math.round(total).toLocaleString('es-AR')}</strong> · Cuota diaria: <strong>$${Math.round(cuota).toLocaleString('es-AR')}</strong> · Interés: <strong>$${Math.round(total-capital).toLocaleString('es-AR')}</strong>`;
+}
+
+// ─── Métricas ─────────────────────────────────────────────────────────────
+function renderMetrics() {
+  const activos = prestamos.filter(p=>estadoPrestamo(p)!=='finalizado').length;
+  const atrasados = prestamos.filter(p=>estadoPrestamo(p)==='atrasado').length;
+  const finalizados = prestamos.filter(p=>estadoPrestamo(p)==='finalizado').length;
+  const cobrarHoyN = prestamos.filter(p=>cobrarHoy(p)||diasAtrasados(p)>0).filter(p=>estadoPrestamo(p)!=='finalizado').length;
+  const totalPrestado = prestamos.reduce((s,p)=>s+p.capital,0);
+  const totalCobrado = prestamos.reduce((s,p)=>s+p.diasPagados*p.cuotaDiaria,0);
+  document.getElementById('metrics-area').innerHTML = `
+    <div class="metric"><div class="metric-label">Activos</div><div class="metric-value">${activos}</div></div>
+    <div class="metric"><div class="metric-label">Cobrar hoy</div><div class="metric-value amber">${cobrarHoyN}</div></div>
+    <div class="metric"><div class="metric-label">Atrasados</div><div class="metric-value red">${atrasados}</div></div>
+    <div class="metric"><div class="metric-label">Finalizados</div><div class="metric-value green">${finalizados}</div></div>
+    <div class="metric"><div class="metric-label">Total prestado</div><div class="metric-value" style="font-size:14px">$${totalPrestado.toLocaleString('es-AR')}</div></div>
+    <div class="metric"><div class="metric-label">Total cobrado</div><div class="metric-value green" style="font-size:14px">$${Math.round(totalCobrado).toLocaleString('es-AR')}</div></div>
+  `;
+}
+
+// ─── Tarjeta préstamo ─────────────────────────────────────────────────────
+function cardPrestamo(p, query='') {
+  const estado = estadoPrestamo(p);
+  const atrasos = diasAtrasados(p);
+  const pct = Math.round(p.diasPagados/p.diasTotal*100);
+  const badgeClass = {finalizado:'badge-gray',atrasado:'badge-danger',activo:'badge-ok'}[estado];
+  const badgeText = estado==='finalizado'?'Finalizado':estado==='atrasado'?`${atrasos} día${atrasos!==1?'s':''} atrasado`:'Al día';
+  const fillClass = estado==='atrasado'?'danger':'';
+  const cobHoy = cobrarHoy(p);
+  const restante = p.totalDevolver - p.diasPagados * p.cuotaDiaria;
+  const ultimaNota = p.notas&&p.notas.length>0?p.notas[p.notas.length-1]:null;
+  const notaHtml = ultimaNota?`<div class="nota-preview">Nota: ${ultimaNota.texto.length>80?ultimaNota.texto.slice(0,80)+'...':ultimaNota.texto}</div>`:'';
+  const nc = p.notas?p.notas.length:0;
+  const nombreHtml = query ? highlight(p.nombre,query) : p.nombre;
+
+  // Dots de días
+  const diasHabiles = diasHabilesDesde(p.fechaInicio, p.diasTotal);
+  const hd = hoy(); hd.setHours(0,0,0,0);
+  const dots = diasHabiles.slice(0, Math.min(p.diasTotal,40)).map((d,i) => {
+    let cls, label = i+1;
+    if (i < p.diasPagados) cls = 'pagado';
+    else if (d.getTime() === hd.getTime()) cls = 'hoy';
+    else if (d < hd) cls = 'vencido';
+    else cls = 'pendiente';
+    return `<div class="dia-dot ${cls}" title="${fechaStr(d)}">${label}</div>`;
+  }).join('') + (p.diasTotal>40?`<span style="font-size:11px;color:var(--text3);margin-left:4px">+${p.diasTotal-40}</span>`:'');
+
+  return `<div class="card" style="${cobHoy||atrasos>0?'border-color:var(--amber);':estado==='atrasado'?'border-color:var(--red);':''}">
+    <div class="client-header">
+      <div class="avatar" style="${estado==='atrasado'?'background:var(--red-bg);color:var(--red-text);':cobHoy?'background:var(--amber-bg);color:var(--amber-text);':''}">${initials(p.nombre)}</div>
+      <div class="client-info">
+        <div class="client-name">${nombreHtml}${atrasos>0?`<span class="atraso-badge">⚠ ${atrasos}d</span>`:''}</div>
+        <div class="client-sub">$${p.capital.toLocaleString('es-AR')} → $${p.totalDevolver.toLocaleString('es-AR')} · ${p.tasa}% · ${p.diasTotal} días</div>
+        ${p.tel||p.dir?`<div class="client-meta">${p.tel||''}${p.tel&&p.dir?' · ':''}${p.dir||''}</div>`:''}
+      </div>
+      <span class="badge ${badgeClass}">${badgeText}</span>
+    </div>
+    <div class="fin-row">
+      <div class="fin-item"><div class="fin-label">Cuota diaria</div><div class="fin-value">$${Math.round(p.cuotaDiaria).toLocaleString('es-AR')}</div></div>
+      <div class="fin-item"><div class="fin-label">Cobrado</div><div class="fin-value green">$${Math.round(p.diasPagados*p.cuotaDiaria).toLocaleString('es-AR')}</div></div>
+      <div class="fin-item"><div class="fin-label">Resta</div><div class="fin-value ${restante>0?'red':'green'}">$${Math.round(Math.max(0,restante)).toLocaleString('es-AR')}</div></div>
+      <div class="fin-item"><div class="fin-label">Días</div><div class="fin-value">${p.diasPagados}/${p.diasTotal}</div></div>
+    </div>
+    <div class="progress-row">
+      <div class="progress-bar"><div class="progress-fill ${fillClass}" style="width:${pct}%"></div></div>
+      <span class="progress-text">${pct}%</span>
+    </div>
+    <div class="dias-grid">${dots}</div>
+    ${notaHtml}
+    <div class="actions">
+      <button class="btn" onclick="verDetalle(${p.id})">Ver detalle</button>
+      <button class="btn" onclick="abrirEditar(${p.id})">Editar</button>
+      <button class="btn btn-note" onclick="abrirNota(${p.id})">${nc>0?`Notas (${nc})`:'Agregar nota'}</button>
+      ${estado!=='finalizado'?`<button class="btn btn-primary" onclick="registrarPago(${p.id})">Registrar pago</button>`:''}
+      ${p.diasPagados>0?`<button class="btn btn-danger" onclick="deshacerPago(${p.id})">← Deshacer</button>`:''}
+    </div>
+  </div>`;
+}
+
+function highlight(texto, q) {
+  if (!q) return String(texto);
+  const re = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi');
+  return String(texto).replace(re, '<mark>$1</mark>');
+}
+
+// ─── Renders ──────────────────────────────────────────────────────────────
+function renderHoy() {
+  const lista = prestamos.filter(p => {
+    const e = estadoPrestamo(p);
+    return e !== 'finalizado' && (cobrarHoy(p) || diasAtrasados(p) > 0);
+  }).sort((a,b) => diasAtrasados(b) - diasAtrasados(a));
+  document.getElementById('lista-hoy').innerHTML = lista.length===0
+    ? `<div class="empty">${esHabil(hoy()) ? 'Sin cobros pendientes para hoy' : 'Hoy es fin de semana — no se cobra'}</div>`
+    : lista.map(p=>cardPrestamo(p)).join('');
+}
+function renderTodos() {
+  let lista = [...prestamos];
+  if (filtroActual!=='todos') lista=lista.filter(p=>estadoPrestamo(p)===filtroActual);
+  document.getElementById('lista-todos').innerHTML = lista.length===0?`<div class="empty">Sin resultados</div>`:lista.map(p=>cardPrestamo(p)).join('');
+}
+function renderAtrasados() {
+  const lista = prestamos.filter(p=>estadoPrestamo(p)==='atrasado').sort((a,b)=>diasAtrasados(b)-diasAtrasados(a));
+  document.getElementById('lista-atrasados').innerHTML = lista.length===0?`<div class="empty">Sin préstamos atrasados</div>`:lista.map(p=>cardPrestamo(p)).join('');
+}
+function renderAll() {
+  renderMetrics(); renderHoy(); renderTodos(); renderAtrasados();
+  if (document.getElementById('buscador-global').value.trim()) onBusquedaGlobal();
+}
+
+function setFiltro(f,btn) {
+  filtroActual=f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active'); renderTodos();
+}
+function cambiarTab(tab,btn) {
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-'+tab).classList.add('active');
+  renderAll();
+}
+
+function onBusquedaGlobal() {
+  const q = document.getElementById('buscador-global').value.trim().toLowerCase();
+  const resBusq = document.getElementById('resultados-busqueda');
+  const vistaNorm = document.getElementById('vista-normal');
+  if (!q) { resBusq.style.display='none'; vistaNorm.style.display='block'; return; }
+  resBusq.style.display='block'; vistaNorm.style.display='none';
+  const res = prestamos.filter(p =>
+    p.nombre.toLowerCase().includes(q) || (p.tel||'').includes(q) || (p.dir||'').toLowerCase().includes(q)
+  );
+  document.getElementById('resultados-titulo').textContent =
+    res.length===0?'Sin resultados':`${res.length} préstamo${res.length!==1?'s':''} encontrado${res.length!==1?'s':''}`;
+  document.getElementById('lista-busqueda').innerHTML =
+    res.length===0?`<div class="empty">Sin resultados</div>`:res.map(p=>cardPrestamo(p,q)).join('');
+}
+
+// ─── Nuevo préstamo ───────────────────────────────────────────────────────
+function abrirModalNuevo() {
+  document.getElementById('n-fecha').value = hoy().toISOString().split('T')[0];
+  ['n-nombre','n-tel','n-dir','n-nota'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('n-capital').value='';
+  document.getElementById('n-tasa').value='45';
+  document.getElementById('n-dias').value='20';
+  document.getElementById('calc-preview').style.display='none';
+  document.getElementById('modal-nuevo').classList.add('open');
+}
+function cerrarModal(id) { document.getElementById(id).classList.remove('open'); }
+
+async function guardarPrestamo() {
+  const nombre = document.getElementById('n-nombre').value.trim();
+  const capital = parseFloat(document.getElementById('n-capital').value);
+  const fechaInicio = document.getElementById('n-fecha').value;
+  if (!nombre||!capital||!fechaInicio) { alert('Completá nombre, capital y fecha'); return; }
+  const tasa = parseFloat(document.getElementById('n-tasa').value)||45;
+  const diasTotal = parseInt(document.getElementById('n-dias').value)||20;
+  const totalDevolver = Math.round(capital * (1 + tasa/100));
+  const cuotaDiaria = totalDevolver / diasTotal;
+  const notaIni = document.getElementById('n-nota').value.trim();
+  prestamos.push({
+    id: nextId++, nombre,
+    tel: document.getElementById('n-tel').value.trim(),
+    dir: document.getElementById('n-dir').value.trim(),
+    capital, tasa, totalDevolver, cuotaDiaria, diasTotal,
+    diasPagados: 0, fechaInicio,
+    historial: [],
+    notas: notaIni?[{fecha:fechaHoy(),texto:notaIni}]:[]
+  });
+  cerrarModal('modal-nuevo'); renderAll();
+  showToast('Préstamo agregado — guardando...');
+  await guardarEnSheets();
+}
+
+// ─── Editar ───────────────────────────────────────────────────────────────
+function abrirEditar(id) {
+  const p=prestamos.find(x=>x.id===id);
+  document.getElementById('e-id').value=id;
+  document.getElementById('e-nombre').value=p.nombre;
+  document.getElementById('e-tel').value=p.tel||'';
+  document.getElementById('e-dir').value=p.dir||'';
+  document.getElementById('modal-editar').classList.add('open');
+}
+async function actualizarPrestamo() {
+  const id=parseInt(document.getElementById('e-id').value);
+  const p=prestamos.find(x=>x.id===id);
+  const nombre=document.getElementById('e-nombre').value.trim();
+  if (!nombre) { alert('El nombre es obligatorio'); return; }
+  p.nombre=nombre; p.tel=document.getElementById('e-tel').value.trim(); p.dir=document.getElementById('e-dir').value.trim();
+  cerrarModal('modal-editar'); renderAll();
+  showToast('Actualizado — guardando...');
+  await guardarEnSheets();
+}
+async function eliminarPrestamo() {
+  const id=parseInt(document.getElementById('e-id').value);
+  const p=prestamos.find(x=>x.id===id);
+  if (!confirm(`¿Eliminar el préstamo de ${p.nombre}?`)) return;
+  prestamos=prestamos.filter(x=>x.id!==id);
+  cerrarModal('modal-editar'); renderAll();
+  showToast('Préstamo eliminado — guardando...');
+  await guardarEnSheets();
+}
+
+// ─── Pagos ────────────────────────────────────────────────────────────────
+async function registrarPago(id) {
+  const p=prestamos.find(x=>x.id===id);
+  if (!p||p.diasPagados>=p.diasTotal) return;
+  p.diasPagados++;
+  p.historial.push(fechaHoy());
+  renderAll();
+  showToast(`Pago día ${p.diasPagados}/${p.diasTotal} registrado para ${p.nombre}`);
+  await guardarEnSheets();
+}
+async function deshacerPago(id) {
+  const p=prestamos.find(x=>x.id===id);
+  if (!p||p.diasPagados<=0) return;
+  if (!confirm(`¿Deshacer el último pago de ${p.nombre}?`)) return;
+  p.diasPagados--;
+  p.historial.pop();
+  renderAll();
+  showToast(`Pago deshecho para ${p.nombre}`);
+  await guardarEnSheets();
+}
+
+// ─── Notas ────────────────────────────────────────────────────────────────
+function abrirNota(id) {
+  notaPrestamoId=id;
+  const p=prestamos.find(x=>x.id===id);
+  document.getElementById('nota-title').textContent=`Notas: ${p.nombre}`;
+  document.getElementById('nota-texto').value='';
+  renderNotasModal(p);
+  document.getElementById('modal-nota').classList.add('open');
+}
+function renderNotasModal(p) {
+  const cont=document.getElementById('notas-existentes');
+  if (!p.notas||p.notas.length===0) { cont.innerHTML=''; return; }
+  cont.innerHTML=`<div class="section-sub" style="margin-top:12px">Notas anteriores</div>`+
+    p.notas.slice().reverse().map((n,i)=>`
+      <div class="nota-item">
+        <div class="nota-header"><span class="nota-fecha">${n.fecha}</span><button class="btn-del" onclick="eliminarNota(${p.id},${p.notas.length-1-i})">Eliminar</button></div>
+        <div class="nota-texto">${n.texto}</div>
+      </div>`).join('');
+}
+async function eliminarNota(pid,idx) {
+  const p=prestamos.find(x=>x.id===pid);
+  p.notas.splice(idx,1);
+  renderNotasModal(p); renderAll();
+  await guardarEnSheets();
+}
+async function guardarNota() {
+  const texto=document.getElementById('nota-texto').value.trim();
+  if (!texto) return;
+  const p=prestamos.find(x=>x.id===notaPrestamoId);
+  if (!p.notas) p.notas=[];
+  p.notas.push({fecha:fechaHoy(),texto});
+  document.getElementById('nota-texto').value='';
+  renderNotasModal(p); renderAll();
+  showToast('Nota guardada — guardando...');
+  await guardarEnSheets();
+}
+
+// ─── Detalle ──────────────────────────────────────────────────────────────
+function verDetalle(id) {
+  const p=prestamos.find(x=>x.id===id);
+  const estado=estadoPrestamo(p);
+  const atrasos=diasAtrasados(p);
+  const cobrado=p.diasPagados*p.cuotaDiaria;
+  const restante=p.totalDevolver-cobrado;
+  const histHtml=p.historial.length>0
+    ?p.historial.map((f,i)=>`<div class="historial-entry"><span>Día ${i+1}</span><span>$${Math.round(p.cuotaDiaria).toLocaleString('es-AR')}</span><span>${f}</span></div>`).join('')
+    :`<div style="font-size:13px;color:var(--text3);padding:8px 0">Sin pagos registrados</div>`;
+  const notasHtml=p.notas&&p.notas.length>0
+    ?p.notas.slice().reverse().map(n=>`<div class="nota-item"><div class="nota-header"><span class="nota-fecha">${n.fecha}</span></div><div class="nota-texto">${n.texto}</div></div>`).join('')
+    :`<div style="font-size:13px;color:var(--text3);padding:8px 0">Sin notas</div>`;
+  document.getElementById('modal-detalle-content').innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px">
+      <div>
+        <div class="modal-title" style="margin-bottom:4px">${p.nombre}${atrasos>0?`<span class="atraso-badge">⚠ ${atrasos}d atrasado</span>`:''}</div>
+        ${p.tel?`<div style="font-size:13px;color:var(--text2)">${p.tel}</div>`:''}
+        ${p.dir?`<div style="font-size:13px;color:var(--text2)">${p.dir}</div>`:''}
+      </div>
+      <button class="btn" onclick="cerrarModal('modal-detalle')">Cerrar</button>
+    </div>
+    <div class="detail-grid">
+      <div class="detail-cell"><div class="dl">Capital prestado</div><div class="dv">$${p.capital.toLocaleString('es-AR')}</div></div>
+      <div class="detail-cell"><div class="dl">Total a devolver</div><div class="dv">$${p.totalDevolver.toLocaleString('es-AR')}</div></div>
+      <div class="detail-cell"><div class="dl">Interés</div><div class="dv amber">${p.tasa}% · $${(p.totalDevolver-p.capital).toLocaleString('es-AR')}</div></div>
+      <div class="detail-cell"><div class="dl">Cuota diaria</div><div class="dv">$${Math.round(p.cuotaDiaria).toLocaleString('es-AR')}</div></div>
+      <div class="detail-cell"><div class="dl">Días pagados</div><div class="dv">${p.diasPagados} / ${p.diasTotal}</div></div>
+      <div class="detail-cell"><div class="dl">Total cobrado</div><div class="dv green">$${Math.round(cobrado).toLocaleString('es-AR')}</div></div>
+      <div class="detail-cell"><div class="dl">Saldo pendiente</div><div class="dv red">$${Math.round(Math.max(0,restante)).toLocaleString('es-AR')}</div></div>
+      <div class="detail-cell"><div class="dl">Estado</div><div class="dv" style="font-size:14px">${{finalizado:'Finalizado',atrasado:'Atrasado',activo:'Al día'}[estado]}</div></div>
+    </div>
+    <div class="section-sub">Historial de pagos</div>
+    <div style="max-height:160px;overflow-y:auto;margin-bottom:14px">${histHtml}</div>
+    <div class="section-sub">Notas</div>
+    <div style="max-height:130px;overflow-y:auto;margin-bottom:18px">${notasHtml}</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      ${estado!=='finalizado'?`<button class="btn btn-primary" style="flex:1" onclick="registrarPago(${p.id});cerrarModal('modal-detalle')">Registrar pago</button>`:''}
+      ${p.diasPagados>0?`<button class="btn btn-danger" style="flex:1" onclick="deshacerPago(${p.id});cerrarModal('modal-detalle')">← Deshacer</button>`:''}
+      <button class="btn btn-note" style="flex:1" onclick="cerrarModal('modal-detalle');abrirNota(${p.id})">Notas</button>
+      <button class="btn" style="flex:1" onclick="cerrarModal('modal-detalle');abrirEditar(${p.id})">Editar</button>
+    </div>
+  `;
+  document.getElementById('modal-detalle').classList.add('open');
+}
+
+// ─── Utils ────────────────────────────────────────────────────────────────
+function showToast(msg) {
+  const e=document.querySelector('.toast'); if(e) e.remove();
+  const t=document.createElement('div');
+  t.className='toast'; t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),3000);
+}
+document.querySelectorAll('.modal-overlay').forEach(o=>{
+  o.addEventListener('click',e=>{ if(e.target===o) o.classList.remove('open'); });
+});
+document.getElementById('fecha-hoy').textContent = formatFechaLarga(hoy());
+
+// ─── Inicio ───────────────────────────────────────────────────────────────
+(async()=>{
+  try {
+    const data = await leerDeSheets();
+    prestamos = data.prestamos||[];
+    nextId = data.nextId||(prestamos.length>0?Math.max(...prestamos.map(p=>p.id))+1:1);
+    setSyncStatus('ok','Sincronizado');
+  } catch(e) {
+    setSyncStatus('err','Sin conexión');
+    showToast('No se pudo conectar. Usá el botón Actualizar.');
+    console.error(e);
+  }
+  document.getElementById('loading-screen').style.display='none';
+  renderAll();
+})();
+</script>
+</body>
+</html>
