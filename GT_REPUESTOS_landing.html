@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GT REPUESTOS — Repuestos para celulares</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --rojo:#4F6EF7;
+  --negro:#080c14;
+  --oscuro:#0d1220;
+  --surface:#111827;
+  --surface2:#1a2236;
+  --border:rgba(255,255,255,.07);
+  --text:#f0f0f5;
+  --muted:#8888a0;
+  --blanco:#ffffff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--negro);color:var(--text);overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+img{max-width:100%;display:block}
+
+/* TICKER */
+.ticker{background:var(--acento);padding:9px 0;overflow:hidden;white-space:nowrap}
+.ticker-inner{display:inline-flex;animation:tick 28s linear infinite}
+.ticker-item{padding:0 32px;font-family:'Barlow Condensed',sans-serif;font-size:.95rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#fff}
+.ticker-dot{color:rgba(255,255,255,.5);margin:0 4px}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* NAV */
+nav{background:rgba(10,10,15,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;padding:0 5%}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;height:64px}
+.nav-logo{font-family:'Barlow Condensed',sans-serif;font-size:1.6rem;font-weight:900;letter-spacing:3px;color:var(--text)}
+.nav-logo span{background:linear-gradient(135deg,#4F6EF7,#7C5CF5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.nav-links{display:flex;gap:28px;align-items:center}
+.nav-links a{font-size:.82rem;font-weight:600;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;transition:color .2s}
+.nav-links a:hover{color:var(--text)}
+.nav-wa{background:linear-gradient(135deg,#4F6EF7,#7C5CF5);color:#fff!important;padding:8px 18px;border-radius:6px;font-size:.8rem!important;font-weight:700!important;letter-spacing:1px;transition:opacity .2s!important}
+.nav-wa:hover{opacity:.85}
+.nav-hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px}
+.nav-hamburger span{display:block;width:24px;height:2px;background:var(--text);border-radius:2px;transition:.3s}
+.mob-menu{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:var(--oscuro);z-index:200;flex-direction:column;align-items:center;justify-content:center;gap:32px}
+.mob-menu.open{display:flex}
+.mob-menu a{font-family:'Barlow Condensed',sans-serif;font-size:2rem;font-weight:700;letter-spacing:2px;text-transform:uppercase}
+.mob-close{position:absolute;top:24px;right:24px;font-size:2rem;cursor:pointer;color:var(--muted)}
+
+/* HERO */
+.hero{position:relative;min-height:92vh;display:flex;align-items:center;padding:60px 5%;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 70% 50%,rgba(79,110,247,.12) 0%,transparent 70%),radial-gradient(ellipse 40% 40% at 20% 80%,rgba(79,110,247,.06) 0%,transparent 60%);pointer-events:none}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:60px 60px;pointer-events:none}
+.hero-content{position:relative;z-index:2;max-width:600px}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(79,110,247,.15);border:1px solid rgba(79,110,247,.3);padding:6px 14px;border-radius:30px;font-size:.75rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--acento);margin-bottom:24px}
+.hero-badge::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--acento);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.hero h1{font-family:'Barlow Condensed',sans-serif;font-size:clamp(3rem,8vw,6.5rem);font-weight:900;line-height:.92;letter-spacing:-1px;text-transform:uppercase;margin-bottom:20px}
+.hero h1 em{font-style:normal;color:var(--acento)}
+.hero p{font-size:1.05rem;color:var(--muted);line-height:1.7;max-width:440px;margin-bottom:36px}
+.hero-ctas{display:flex;gap:14px;flex-wrap:wrap}
+.btn-primary{background:linear-gradient(135deg,#4F6EF7,#7C5CF5);color:#fff;padding:14px 28px;border-radius:6px;font-weight:700;font-size:.9rem;letter-spacing:.5px;display:inline-flex;align-items:center;gap:8px;transition:transform .15s,box-shadow .15s;box-shadow:0 8px 24px rgba(79,110,247,.4)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(79,110,247,.5)}
+.btn-secondary{background:transparent;color:var(--text);padding:14px 28px;border-radius:6px;font-weight:600;font-size:.9rem;border:1px solid var(--border);display:inline-flex;align-items:center;gap:8px;transition:border-color .2s,background .2s}
+.btn-secondary:hover{border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.04)}
+.hero-stats{display:flex;gap:40px;margin-top:52px;padding-top:36px;border-top:1px solid var(--border)}
+.stat-num{font-family:'Barlow Condensed',sans-serif;font-size:2.2rem;font-weight:800;color:var(--text);line-height:1}
+.stat-lbl{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+.hero-visual{position:absolute;right:3%;top:50%;transform:translateY(-50%);width:42%;max-width:520px;pointer-events:none;opacity:.9}
+.hero-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.hcard{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;position:relative;overflow:hidden}
+.hcard::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.hcard.c1::before{background:linear-gradient(90deg,#4F6EF7,#ff6b35)}
+.hcard.c2::before{background:linear-gradient(90deg,#3a86ff,#00cfff)}
+.hcard.c3::before{background:linear-gradient(90deg,#2ecc71,#00b4d8)}
+.hcard.c4::before{background:linear-gradient(90deg,#f39c12,#4F6EF7)}
+.hcard-ico{font-size:2rem;margin-bottom:10px}
+.hcard-title{font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px}
+.hcard-sub{font-size:.72rem;color:var(--muted)}
+.hcard-badge{display:inline-block;background:rgba(79,110,247,.15);color:var(--acento);border-radius:4px;padding:2px 7px;font-size:.65rem;font-weight:700;letter-spacing:.5px;margin-top:8px}
+
+/* BENEFICIOS */
+.benefits{padding:60px 5%;border-bottom:1px solid var(--border)}
+.benefits-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1px;background:var(--border)}
+.benefit{background:var(--negro);padding:28px 24px;display:flex;align-items:center;gap:14px;transition:background .2s}
+.benefit:hover{background:var(--surface)}
+.benefit-ico{font-size:1.5rem;flex-shrink:0}
+.benefit-txt strong{display:block;font-size:.85rem;font-weight:600;margin-bottom:2px}
+.benefit-txt span{font-size:.75rem;color:var(--muted)}
+
+/* CATEGORÍAS */
+.section{padding:80px 5%}
+.section-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:40px}
+.section-label{font-size:.72rem;font-weight:700;color:var(--acento);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
+.section-title{font-family:'Barlow Condensed',sans-serif;font-size:clamp(1.8rem,4vw,3rem);font-weight:800;text-transform:uppercase;line-height:1}
+.section-link{font-size:.8rem;font-weight:600;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;display:flex;align-items:center;gap:6px;transition:color .2s}
+.section-link:hover{color:var(--text)}
+.cats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+.cat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px 16px;text-align:center;cursor:pointer;transition:transform .15s,border-color .2s,background .2s;position:relative;overflow:hidden}
+.cat-card::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 60%,rgba(79,110,247,.06));opacity:0;transition:opacity .2s}
+.cat-card:hover{transform:translateY(-3px);border-color:rgba(79,110,247,.3);background:var(--surface2)}
+.cat-card:hover::after{opacity:1}
+.cat-ico{font-size:2rem;margin-bottom:10px}
+.cat-name{font-family:'Barlow Condensed',sans-serif;font-size:.95rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;line-height:1.2}
+.cat-count{font-size:.68rem;color:var(--muted);margin-top:4px}
+
+/* DESTACADOS */
+.products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+.prod-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:transform .15s,border-color .2s}
+.prod-card:hover{transform:translateY(-3px);border-color:rgba(255,255,255,.12)}
+.prod-img{aspect-ratio:1;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:3.5rem;position:relative}
+.prod-badge{position:absolute;top:10px;left:10px;background:var(--acento);color:#fff;font-size:.65rem;font-weight:700;padding:3px 8px;border-radius:4px;letter-spacing:.5px}
+.prod-info{padding:14px}
+.prod-cat{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.prod-name{font-size:.85rem;font-weight:500;line-height:1.35;margin-bottom:10px;color:var(--text)}
+.prod-price{font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:800;color:var(--acento)}
+.prod-wa{display:flex;align-items:center;justify-content:center;gap:6px;background:rgba(37,211,102,.12);color:#25D366;border:1px solid rgba(37,211,102,.2);border-radius:6px;padding:8px;font-size:.78rem;font-weight:600;margin-top:10px;transition:background .2s}
+.prod-wa:hover{background:rgba(37,211,102,.2)}
+
+/* COMO COMPRAR */
+.steps{padding:80px 5%;background:var(--surface)}
+.steps-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:40px;margin-top:48px}
+.step{text-align:center}
+.step-num{font-family:'Barlow Condensed',sans-serif;font-size:5rem;font-weight:900;color:rgba(79,110,247,.15);line-height:1;margin-bottom:-10px}
+.step-ico{font-size:1.8rem;margin-bottom:12px}
+.step-title{font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.step-desc{font-size:.8rem;color:var(--muted);line-height:1.6}
+
+/* TESTIMONIOS */
+.testimonios{padding:80px 5%}
+.test-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:48px}
+.test-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px}
+.test-stars{color:#f1c40f;font-size:.9rem;margin-bottom:12px;letter-spacing:2px}
+.test-text{font-size:.85rem;line-height:1.7;color:var(--muted);margin-bottom:16px;font-style:italic}
+.test-author{display:flex;align-items:center;gap:10px}
+.test-avatar{width:36px;height:36px;border-radius:50%;background:var(--acento);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:.95rem;font-weight:700;color:#fff;flex-shrink:0}
+.test-name{font-size:.82rem;font-weight:600}
+.test-via{font-size:.7rem;color:var(--muted)}
+
+/* CTA */
+.cta-section{padding:80px 5%;text-align:center;position:relative;overflow:hidden}
+.cta-section::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 50% 50%,rgba(79,110,247,.12) 0%,radial-gradient(ellipse 40% 40% at 60% 60%,rgba(124,92,245,.08) 0%,transparent 60%) 0%,transparent 70%);pointer-events:none}
+.cta-section h2{font-family:'Barlow Condensed',sans-serif;font-size:clamp(2.5rem,6vw,5rem);font-weight:900;text-transform:uppercase;line-height:.95;margin-bottom:16px}
+.cta-section h2 em{font-style:normal;color:var(--acento)}
+.cta-section p{color:var(--muted);font-size:1rem;max-width:480px;margin:0 auto 36px;line-height:1.7}
+.cta-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+
+/* FAQ */
+.faq{padding:80px 5%;border-top:1px solid var(--border)}
+.faq-list{margin-top:48px;max-width:720px;margin-left:auto;margin-right:auto}
+.faq-item{border-bottom:1px solid var(--border)}
+.faq-q{display:flex;justify-content:space-between;align-items:center;padding:20px 0;cursor:pointer;font-weight:500;font-size:.9rem;gap:16px}
+.faq-arrow{color:var(--muted);font-size:1.2rem;transition:transform .2s;flex-shrink:0}
+.faq-item.open .faq-arrow{transform:rotate(180deg)}
+.faq-a{font-size:.85rem;color:var(--muted);line-height:1.7;max-height:0;overflow:hidden;transition:max-height .3s,padding .3s}
+.faq-item.open .faq-a{max-height:200px;padding-bottom:20px}
+
+/* FOOTER */
+footer{background:var(--oscuro);border-top:1px solid var(--border);padding:60px 5% 32px}
+.footer-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:48px;margin-bottom:48px}
+.footer-logo{font-family:'Barlow Condensed',sans-serif;font-size:1.5rem;font-weight:900;letter-spacing:3px;margin-bottom:12px}
+.footer-logo span{background:linear-gradient(135deg,#4F6EF7,#7C5CF5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.footer-desc{font-size:.8rem;color:var(--muted);line-height:1.7;max-width:280px;margin-bottom:20px}
+.footer-social{display:flex;gap:10px}
+.social-btn{width:36px;height:36px;border-radius:8px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.9rem;transition:background .2s,border-color .2s}
+.social-btn:hover{background:var(--acento);border-color:var(--acento)}
+.footer-col h4{font-family:'Barlow Condensed',sans-serif;font-size:.95rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;color:var(--text)}
+.footer-col a{display:block;font-size:.8rem;color:var(--muted);margin-bottom:8px;transition:color .2s}
+.footer-col a:hover{color:var(--text)}
+.footer-bottom{border-top:1px solid var(--border);padding-top:24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:gap}
+.footer-copy{font-size:.75rem;color:var(--muted)}
+.footer-pay{display:flex;gap:8px;align-items:center}
+.pay-badge{background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:4px 10px;font-size:.68rem;font-weight:600;color:var(--muted)}
+
+/* WA FLOTANTE */
+.wa-float{position:fixed;bottom:24px;right:24px;z-index:99;background:#25D366;color:#fff;width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;box-shadow:0 8px 24px rgba(37,211,102,.4);animation:wapulse 3s infinite;transition:transform .15s}
+.wa-float:hover{transform:scale(1.1)}
+@keyframes wapulse{0%,100%{box-shadow:0 8px 24px rgba(37,211,102,.4)}50%{box-shadow:0 8px 36px rgba(37,211,102,.7)}}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .hero-visual{display:none}
+  .hero-content{max-width:100%}
+  .footer-grid{grid-template-columns:1fr 1fr}
+  .nav-links{display:none}
+  .nav-hamburger{display:flex}
+}
+@media(max-width:600px){
+  .hero{min-height:80vh;padding:40px 5%}
+  .hero-stats{gap:24px}
+  .footer-grid{grid-template-columns:1fr}
+  .section{padding:60px 5%}
+  .cta-btns{flex-direction:column;align-items:center}
+}
+
+.prod-img img{width:100%;height:100%;object-fit:cover;display:block}
+.prod-img{overflow:hidden}
+</style>
+</head>
+<body>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-inner">
+    <span class="ticker-item">📱 Módulos iPhone y Android</span><span class="ticker-dot">•</span>
+    <span class="ticker-item">🔋 Baterías Foxconn · Ampsentrix · JCID</span><span class="ticker-dot">•</span>
+    <span class="ticker-item">⚡ Placas de carga Samsung · Motorola · Xiaomi</span><span class="ticker-dot">•</span>
+    <span class="ticker-item">🔧 Tapas iPhone hasta línea 16</span><span class="ticker-dot">•</span>
+    <span class="ticker-item">💬 Pedidos por WhatsApp</span><span class="ticker-dot">•</span>
+    <span class="ticker-item">🚚 Enviamos a todo el país</span><span class="ticker-dot">•</span>
+    <span class="ticker-item">📱 Módulos iPhone y Android</span><span class="ticker-dot">•</span>
+    <span class="ticker-item">🔋 Baterías Foxconn · Ampsentrix · JCID</span><span class="ticker-dot">•</span>
+    <span class="ticker-item">⚡ Placas de carga Samsung · Motorola · Xiaomi</span><span class="ticker-dot">•</span>
+    <span class="ticker-item">🔧 Tapas iPhone hasta línea 16</span><span class="ticker-dot">•</span>
+    <span class="ticker-item">💬 Pedidos por WhatsApp</span><span class="ticker-dot">•</span>
+    <span class="ticker-item">🚚 Enviamos a todo el país</span><span class="ticker-dot">•</span>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo" style="display:flex;align-items:center;gap:10px"><img src="1776199259334_image.png" style="height:36px;width:auto" alt="Giftek" onerror="this.style.display='none'">GT <span>REPUESTOS</span></div>
+    <div class="nav-links">
+      <a href="#categorias">Catálogo</a>
+      <a href="#como-comprar">Cómo comprar</a>
+      <a href="#faq">FAQ</a>
+      <a href="#contacto">Contacto</a>
+      <a href="https://wa.me/5493534186914" class="nav-wa" target="_blank">💬 WhatsApp</a>
+    </div>
+    <div class="nav-hamburger" onclick="document.getElementById('mobMenu').classList.add('open')">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<!-- MENU MOBILE -->
+<div class="mob-menu" id="mobMenu">
+  <span class="mob-close" onclick="document.getElementById('mobMenu').classList.remove('open')">✕</span>
+  <a href="#categorias" onclick="document.getElementById('mobMenu').classList.remove('open')">Catálogo</a>
+  <a href="#como-comprar" onclick="document.getElementById('mobMenu').classList.remove('open')">Cómo comprar</a>
+  <a href="#faq" onclick="document.getElementById('mobMenu').classList.remove('open')">FAQ</a>
+  <a href="#contacto" onclick="document.getElementById('mobMenu').classList.remove('open')">Contacto</a>
+  <a href="https://wa.me/5493534186914" style="color:var(--acento)" target="_blank">💬 WhatsApp</a>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-badge">🟢 Repuestos disponibles hoy</div>
+    <h1>Tu proveedor<br>de <em>repuestos</em><br>para celulares</h1>
+    <p>Módulos, baterías, placas de carga y tapas para iPhone, Samsung, Motorola y Xiaomi. Calidad garantizada, precios mayoristas.</p>
+    <div class="hero-ctas">
+      <a href="GT_REPUESTOS_tienda.html" class="btn-primary">📋 Ver catálogo completo →</a>
+      <a href="https://wa.me/5493534186914" class="btn-secondary" target="_blank">💬 Consultar por WhatsApp</a>
+    </div>
+    <div class="hero-stats">
+      <div>
+        <div class="stat-num">+500</div>
+        <div class="stat-lbl">Productos</div>
+      </div>
+      <div>
+        <div class="stat-num">4</div>
+        <div class="stat-lbl">Marcas principales</div>
+      </div>
+      <div>
+        <div class="stat-num">24h</div>
+        <div class="stat-lbl">Respuesta</div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="hero-cards">
+      <div class="hcard c1">
+        <div class="hcard-ico">📱</div>
+        <div class="hcard-title">Módulos</div>
+        <div class="hcard-sub">Samsung · Motorola<br>Xiaomi · iPhone</div>
+        <div class="hcard-badge">+200 modelos</div>
+      </div>
+      <div class="hcard c2">
+        <div class="hcard-ico">🔋</div>
+        <div class="hcard-title">Baterías</div>
+        <div class="hcard-sub">Foxconn · Ampsentrix<br>JCID · Wuzip</div>
+        <div class="hcard-badge">+80 modelos</div>
+      </div>
+      <div class="hcard c3">
+        <div class="hcard-ico">⚡</div>
+        <div class="hcard-title">Placas de carga</div>
+        <div class="hcard-sub">Samsung · Motorola<br>Xiaomi</div>
+        <div class="hcard-badge">+95 modelos</div>
+      </div>
+      <div class="hcard c4">
+        <div class="hcard-ico">🔧</div>
+        <div class="hcard-title">Tapas iPhone</div>
+        <div class="hcard-sub">Línea 8 a 16<br>Todos los colores</div>
+        <div class="hcard-badge">+110 variantes</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BENEFICIOS -->
+<div class="benefits">
+  <div class="benefits-grid">
+    <div class="benefit"><span class="benefit-ico">🚚</span><div class="benefit-txt"><strong>Envíos a todo el país</strong><span>Despachamos por correo o transporte</span></div></div>
+    <div class="benefit"><span class="benefit-ico">💬</span><div class="benefit-txt"><strong>Atención personalizada</strong><span>Respondemos por WhatsApp</span></div></div>
+    <div class="benefit"><span class="benefit-ico">✅</span><div class="benefit-txt"><strong>Calidad garantizada</strong><span>Productos probados y verificados</span></div></div>
+    <div class="benefit"><span class="benefit-ico">💲</span><div class="benefit-txt"><strong>Precios mayoristas</strong><span>Para técnicos y revendedores</span></div></div>
+    <div class="benefit"><span class="benefit-ico">📦</span><div class="benefit-txt"><strong>Stock actualizado</strong><span>Consultá disponibilidad antes de comprar</span></div></div>
+  </div>
+</div>
+
+<!-- CATEGORÍAS -->
+<section class="section" id="categorias">
+  <div class="section-header">
+    <div>
+      <div class="section-label">Nuestro catálogo</div>
+      <div class="section-title">Categorías principales</div>
+    </div>
+    <a href="GT_REPUESTOS_tienda.html" class="section-link">Ver todo →</a>
+  </div>
+  <div class="cats-grid">
+    <div class="cat-card" onclick="window.location='GT_REPUESTOS_tienda.html'">
+      <div class="cat-ico">📱</div>
+      <div class="cat-name">Módulos Samsung</div>
+      <div class="cat-count">Gold Edition · Premium · C/Marco</div>
+    </div>
+    <div class="cat-card" onclick="window.location='GT_REPUESTOS_tienda.html'">
+      <div class="cat-ico">📱</div>
+      <div class="cat-name">Módulos Motorola</div>
+      <div class="cat-count">E · G · Gold Edition · KP</div>
+    </div>
+    <div class="cat-card" onclick="window.location='GT_REPUESTOS_tienda.html'">
+      <div class="cat-ico">📱</div>
+      <div class="cat-name">Módulos Xiaomi</div>
+      <div class="cat-count">Redmi · Poco · Note</div>
+    </div>
+    <div class="cat-card" onclick="window.location='GT_REPUESTOS_tienda.html'">
+      <div class="cat-ico">📱</div>
+      <div class="cat-name">Módulos iPhone</div>
+      <div class="cat-count">7 al 16 · JK · Silver · Gold</div>
+    </div>
+    <div class="cat-card" onclick="window.location='GT_REPUESTOS_tienda.html'">
+      <div class="cat-ico">🔋</div>
+      <div class="cat-name">Baterías iPhone</div>
+      <div class="cat-count">Foxconn · Ampsentrix · JCID</div>
+    </div>
+    <div class="cat-card" onclick="window.location='GT_REPUESTOS_tienda.html'">
+      <div class="cat-ico">🔋</div>
+      <div class="cat-name">Baterías Android</div>
+      <div class="cat-count">Samsung · Motorola · Xiaomi</div>
+    </div>
+    <div class="cat-card" onclick="window.location='GT_REPUESTOS_tienda.html'">
+      <div class="cat-ico">⚡</div>
+      <div class="cat-name">Placas de carga</div>
+      <div class="cat-count">Samsung · Motorola · Xiaomi</div>
+    </div>
+    <div class="cat-card" onclick="window.location='GT_REPUESTOS_tienda.html'">
+      <div class="cat-ico">🔧</div>
+      <div class="cat-name">Tapas iPhone</div>
+      <div class="cat-count">Línea 8 · X · 11 al 16</div>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCTOS DESTACADOS -->
+<section class="section" style="padding-top:0" id="destacados">
+  <div class="section-header">
+    <div>
+      <div class="section-label">Más consultados</div>
+      <div class="section-title">Productos destacados</div>
+    </div>
+    <a href="GT_REPUESTOS_tienda.html" class="section-link">Ver catálogo →</a>
+  </div>
+  <div class="products-grid">
+    <div class="prod-card">
+      <div class="prod-img" style="padding:0"><img src="https://cdn.pedix.app/CDIeTPjFFExTnmIlliW0/products/vKwGykxFDCEcBHnJK8veV.png?size=400x400" style="width:100%;height:100%;object-fit:cover" alt="Samsung A54" onerror="this.parentElement.innerHTML='📱'"><span class="prod-badge">TOP</span></div>
+      <div class="prod-info">
+        <div class="prod-cat">Módulos Samsung</div>
+        <div class="prod-name">Samsung A54 OLED C/Marco Gold Edition</div>
+        <div class="prod-price">$73.000</div>
+        <a href="https://wa.me/5493534186914?text=Hola!%20consulto%20por%20Samsung%20A54%20OLED" class="prod-wa" target="_blank">💬 Consultar</a>
+      </div>
+    </div>
+    <div class="prod-card">
+      <div class="prod-img" style="padding:0"><img src="https://cdn.pedix.app/CDIeTPjFFExTnmIlliW0/products/kNCEiN2iuFL-IpVf-X319.png?size=400x400" style="width:100%;height:100%;object-fit:cover" alt="iPhone 14 Pro" onerror="this.parentElement.innerHTML='📱'"><span class="prod-badge">TOP</span></div>
+      <div class="prod-info">
+        <div class="prod-cat">Módulos iPhone</div>
+        <div class="prod-name">iPhone 14 Pro JK</div>
+        <div class="prod-price">$84.000</div>
+        <a href="https://wa.me/5493534186914?text=Hola!%20consulto%20por%20iPhone%2014%20Pro%20JK" class="prod-wa" target="_blank">💬 Consultar</a>
+      </div>
+    </div>
+    <div class="prod-card">
+      <div class="prod-img" style="padding:0"><img src="https://cdn.pedix.app/CDIeTPjFFExTnmIlliW0/products/CTXwZjsricQ9mnWXypqiu.png?size=400x400" style="width:100%;height:100%;object-fit:cover" alt="Batería iPhone" onerror="this.parentElement.innerHTML='🔋'"></div>
+      <div class="prod-info">
+        <div class="prod-cat">Baterías iPhone</div>
+        <div class="prod-name">Batería iPhone 13 Pro Max Auto Programable</div>
+        <div class="prod-price">$49.000</div>
+        <a href="https://wa.me/5493534186914?text=Hola!%20consulto%20por%20Bateria%20iPhone%2013%20Pro%20Max" class="prod-wa" target="_blank">💬 Consultar</a>
+      </div>
+    </div>
+    <div class="prod-card">
+      <div class="prod-img" style="padding:0"><img src="https://cdn.pedix.app/CDIeTPjFFExTnmIlliW0/products/Qj_hhY-9Yg7is_2y7U04O.png?size=400x400" style="width:100%;height:100%;object-fit:cover" alt="Placa de carga" onerror="this.parentElement.innerHTML='⚡'"></div>
+      <div class="prod-info">
+        <div class="prod-cat">Placas de carga</div>
+        <div class="prod-name">Placa de carga Samsung A52</div>
+        <div class="prod-price">$22.000</div>
+        <a href="https://wa.me/5493534186914?text=Hola!%20consulto%20por%20Placa%20Samsung%20A52" class="prod-wa" target="_blank">💬 Consultar</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMO COMPRAR -->
+<section class="steps" id="como-comprar">
+  <div style="text-align:center">
+    <div class="section-label" style="text-align:center">Simple y rápido</div>
+    <div class="section-title">¿Cómo hacer tu pedido?</div>
+  </div>
+  <div class="steps-grid">
+    <div class="step">
+      <div class="step-num">01</div>
+      <div class="step-ico">📋</div>
+      <div class="step-title">Explorá el catálogo</div>
+      <div class="step-desc">Buscá el repuesto que necesitás por modelo, marca o categoría en nuestra tienda online.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <div class="step-ico">🛒</div>
+      <div class="step-title">Armá tu pedido</div>
+      <div class="step-desc">Agregá los productos al carrito y aplicá tu cupón de descuento si tenés uno.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <div class="step-ico">💬</div>
+      <div class="step-title">Envialo por WhatsApp</div>
+      <div class="step-desc">Con un click tu pedido llega directo a nuestro WhatsApp con todos los detalles.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">04</div>
+      <div class="step-ico">🚚</div>
+      <div class="step-title">Recibís en tu domicilio</div>
+      <div class="step-desc">Coordinamos el envío y despachamos a todo el país por el medio que prefieras.</div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIOS -->
+<section class="testimonios">
+  <div class="section-header" style="justify-content:center;text-align:center;flex-direction:column;align-items:center">
+    <div class="section-label">Lo que dicen nuestros clientes</div>
+    <div class="section-title">Testimonios</div>
+  </div>
+  <div class="test-grid">
+    <div class="test-card">
+      <div class="test-stars">★★★★★</div>
+      <div class="test-text">"Excelente atención, respondieron rápido y el módulo llegó perfecto. Definitivamente vuelvo a comprar."</div>
+      <div class="test-author">
+        <div class="test-avatar">MR</div>
+        <div><div class="test-name">Marcos R.</div><div class="test-via">Técnico en celulares · Córdoba</div></div>
+      </div>
+    </div>
+    <div class="test-card">
+      <div class="test-stars">★★★★★</div>
+      <div class="test-text">"Compré baterías Foxconn y llegaron en perfectas condiciones. El precio es muy competitivo para el mercado."</div>
+      <div class="test-author">
+        <div class="test-avatar">LC</div>
+        <div><div class="test-name">Laura C.</div><div class="test-via">Servicio técnico · Buenos Aires</div></div>
+      </div>
+    </div>
+    <div class="test-card">
+      <div class="test-stars">★★★★★</div>
+      <div class="test-text">"El sistema de pedido por WhatsApp es muy cómodo. Pido, confirmo y en pocos días tengo el repuesto."</div>
+      <div class="test-author">
+        <div class="test-avatar">FG</div>
+        <div><div class="test-name">Federico G.</div><div class="test-via">Revendedor · Mendoza</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2>¿Listo para<br><em>hacer tu pedido?</em></h2>
+  <p>Explorá el catálogo completo con más de 500 productos y hacé tu pedido directamente por WhatsApp.</p>
+  <div class="cta-btns">
+    <a href="GT_REPUESTOS_tienda.html" class="btn-primary">📋 Ver catálogo completo →</a>
+    <a href="https://wa.me/5493534186914" class="btn-secondary" target="_blank">💬 Escribirnos ahora</a>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq" id="faq">
+  <div style="text-align:center;margin-bottom:0">
+    <div class="section-label" style="text-align:center">Respuestas rápidas</div>
+    <div class="section-title" style="text-align:center">Preguntas frecuentes</div>
+  </div>
+  <div class="faq-list">
+    <div class="faq-item">
+      <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">¿Hacen envíos a todo el país? <span class="faq-arrow">▼</span></div>
+      <div class="faq-a">Sí, enviamos a todo el país a través de correo y empresas de transporte. El costo y tiempo de envío varía según la zona. Consultanos por WhatsApp para más detalles.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">¿Cómo se hace el pago? <span class="faq-arrow">▼</span></div>
+      <div class="faq-a">Coordinamos el pago por transferencia bancaria una vez confirmado el pedido por WhatsApp. También podés consultar otras formas disponibles al momento de tu pedido.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">¿Los módulos tienen garantía? <span class="faq-arrow">▼</span></div>
+      <div class="faq-a">Sí, todos nuestros productos tienen garantía por defecto de fábrica. Si recibís un producto con falla, nos contactás y lo solucionamos.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">¿Puedo comprar en cantidad? <span class="faq-arrow">▼</span></div>
+      <div class="faq-a">Por supuesto. Trabajamos con técnicos y revendedores. Consultanos por precios mayoristas para compras en cantidad.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">¿Cómo sé si tienen stock del producto que busco? <span class="faq-arrow">▼</span></div>
+      <div class="faq-a">Podés consultar por WhatsApp antes de hacer el pedido. En el catálogo se muestran los productos disponibles, pero siempre confirmar disponibilidad antes de abonar.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACTO -->
+<section class="section" id="contacto" style="background:var(--surface);border-top:1px solid var(--border)">
+  <div class="section-header" style="justify-content:center;flex-direction:column;align-items:center;text-align:center">
+    <div class="section-label">Estamos para ayudarte</div>
+    <div class="section-title">Contacto</div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px;margin-top:48px;max-width:720px;margin-left:auto;margin-right:auto">
+    <a href="https://wa.me/5493534186914" target="_blank" style="background:var(--negro);border:1px solid var(--border);border-radius:12px;padding:28px 20px;text-align:center;transition:border-color .2s" onmouseover="this.style.borderColor='rgba(37,211,102,.4)'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="font-size:2rem;margin-bottom:10px">💬</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">WhatsApp</div>
+      <div style="font-size:.78rem;color:var(--muted)">+54 9 3534 18-6914</div>
+    </a>
+    <div style="background:var(--negro);border:1px solid var(--border);border-radius:12px;padding:28px 20px;text-align:center">
+      <div style="font-size:2rem;margin-bottom:10px">📍</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Ubicación</div>
+      <div style="font-size:.78rem;color:var(--muted)">Argentina</div>
+    </div>
+    <div style="background:var(--negro);border:1px solid var(--border);border-radius:12px;padding:28px 20px;text-align:center">
+      <div style="font-size:2rem;margin-bottom:10px">⏰</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Horario</div>
+      <div style="font-size:.78rem;color:var(--muted)">Lun–Vie 8:30–12:30 y 16:30–19:30<br>Sáb 9:30–13:00</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-logo">GT <span>REPUESTOS</span></div>
+      <p class="footer-desc">Proveedor de repuestos para celulares. Módulos, baterías, placas de carga y tapas para iPhone y Android.</p>
+      <div class="footer-social">
+        <a href="https://wa.me/5493534186914" class="social-btn" target="_blank">💬</a>
+        <a href="#" class="social-btn">📘</a>
+        <a href="https://www.instagram.com/Gfitek.vm" class="social-btn" target="_blank">📸</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Catálogo</h4>
+      <a href="GT_REPUESTOS_tienda.html">Módulos Samsung</a>
+      <a href="GT_REPUESTOS_tienda.html">Módulos Motorola</a>
+      <a href="GT_REPUESTOS_tienda.html">Módulos iPhone</a>
+      <a href="GT_REPUESTOS_tienda.html">Baterías</a>
+      <a href="GT_REPUESTOS_tienda.html">Placas de carga</a>
+      <a href="GT_REPUESTOS_tienda.html">Tapas iPhone</a>
+    </div>
+    <div class="footer-col">
+      <h4>Información</h4>
+      <a href="#como-comprar">Cómo comprar</a>
+      <a href="#faq">Preguntas frecuentes</a>
+      <a href="#contacto">Contacto</a>
+      <a href="https://wa.me/5493534186914" target="_blank">WhatsApp</a>
+      <a href="https://www.instagram.com/Gfitek.vm" target="_blank">Instagram @Gfitek.vm</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-copy">GT REPUESTOS © 2026 — Todos los derechos reservados</div>
+    <div class="footer-pay">
+      <span class="pay-badge">Transferencia</span>
+      <span class="pay-badge">Efectivo</span>
+    </div>
+  </div>
+</footer>
+
+<!-- WA FLOTANTE -->
+<a href="https://wa.me/5493534186914" class="wa-float" target="_blank" title="Escribinos por WhatsApp">💬</a>
+
+</body>
+</html>
