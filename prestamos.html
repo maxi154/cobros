@@ -503,13 +503,13 @@ function cardPrestamo(p, query='') {
       <div class="fin-item"><div class="fin-label">Capital</div><div class="fin-value">${p.capital.toLocaleString('es-AR')}</div></div>
       <div class="fin-item"><div class="fin-label">Interés</div><div class="fin-value amber">${(p.totalDevolver-p.capital).toLocaleString('es-AR')}</div></div>
       <div class="fin-item"><div class="fin-label">Total devolver</div><div class="fin-value">${p.totalDevolver.toLocaleString('es-AR')}</div></div>
-      <div class="fin-item"><div class="fin-label">Días</div><div class="fin-value">\${p.diasPagados}/\${p.diasTotal}</div></div>
+      <div class="fin-item"><div class="fin-label">Días</div><div class="fin-value">${p.diasPagados}/${p.diasTotal}</div></div>
     </div>
     <div class="fin-row">
       <div class="fin-item"><div class="fin-label">Ya cobrado</div><div class="fin-value green">${Math.round(cobrado).toLocaleString('es-AR')}</div></div>
       <div class="fin-item"><div class="fin-label">Ganancia</div><div class="fin-value green">${Math.round((p.diasPagados/p.diasTotal)*(p.totalDevolver-p.capital)).toLocaleString('es-AR')}</div></div>
       <div class="fin-item"><div class="fin-label">Capital recup.</div><div class="fin-value">${Math.round((p.diasPagados/p.diasTotal)*p.capital).toLocaleString('es-AR')}</div></div>
-      <div class="fin-item"><div class="fin-label">Saldo pendiente</div><div class="fin-value \${restante>0?'red':'green'}">${Math.round(Math.max(0,restante)).toLocaleString('es-AR')}</div></div>
+      <div class="fin-item"><div class="fin-label">Saldo pendiente</div><div class="fin-value ${restante>0?'red':'green'}">${Math.round(Math.max(0,restante)).toLocaleString('es-AR')}</div></div>
     </div>
       <div class="fin-item"><div class="fin-label">Cobrado</div><div class="fin-value green">${Math.round(p.diasPagados*p.cuotaDiaria).toLocaleString('es-AR')}</div></div>
       <div class="fin-item"><div class="fin-label">Resta</div><div class="fin-value ${restante>0?'red':'green'}">${Math.round(Math.max(0,restante)).toLocaleString('es-AR')}</div></div>
